@@ -1,0 +1,18 @@
+{% extends 'lr/base.html' %}
+{% load bootstrap3 %}
+
+{% block header %}
+    <h2>Edit money:</h2>
+{% endblock header %}
+
+{% block content %}
+    
+    <form action="{% url 'lr:edit_money' money_id %}" class='form' method='post'>
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        
+        {% buttons %}
+            <button name='submit'>save changes</button>
+        {% endbuttons %}
+    </form>
+{% endblock content %}

@@ -1,0 +1,66 @@
+创建loverelay的操作步骤（win10环境）
+
+一、搭建虚拟环境
+1、先安装virtualenv包
+pip install --user virtualenv
+
+2、切换到LoveRelay目录，创建一个虚拟环境
+cd C:\Users\Administrator\Documents\Files\ITL\Python\python_work\LoveRelay
+python C:\Users\Administrator\AppData\Roaming\Python\Python36\site-packages\virtualenv.py loverelay
+
+3、激活虚拟环境
+C:\Users\Administrator\Documents\Files\ITL\Python\python_work\LoveRelay\loverelay\Scripts\activate
+
+4、安装Django
+pip install Django
+
+5、创建loverelay项目
+django-admin.py startproject loverelay .
+
+6、mysql中创建一个数据库loverelay
+
+7、安装mysql client
+pip install mysqlclient
+
+8、迁移第一批数据到数据库
+python manage.py migrate
+这个命令执行完后，会发现mysql数据库中多了一堆表，有些是空的
+
+9、运行服务，以检查是否创建了项目
+cmd
+cd C:\Users\Administrator\Documents\Files\ITL\Python\python_work\LoveRelay
+C:\Users\Administrator\Documents\Files\ITL\Python\python_work\LoveRelay\loverelay\Scripts\activate
+python manage.py runserver
+
+10、创建应用程序
+python manage.py startapp lr
+
+11、创建模型
+在models.py中定义各个class，它们代表不同的数据库中的表，以及表之间的关系
+见LoveRelay\lr\models.py
+
+12、在settings.py中登记app lr
+
+13、把models中定义的表同步到数据库中
+python manage.py makemigrations lr
+python manage.py migrate
+
+14、为lr创建超级用户
+python manage.py createsuperuser
+username:lr_admin
+password:bdf@1234
+
+
+
+
+cd C:\Users\Administrator\Documents\Files\ITL\Python\python_work\LoveRelay
+
+ll_env\Scripts\activate
+
+python manage.py makemigrations learning_logs
+python manage.py migrate
+
+django-admin.py startproject learning_log .
+python manage.py startapp learning_logs
+
+python manage.py runserver

@@ -1,0 +1,24 @@
+{% extends 'lr/base.html' %}
+
+{% block header %}
+    <h2>Money</h2>
+{% endblock header %}
+
+{% block content %}
+    
+    <ul>
+        {% for money in moneys %}
+            <li>
+                <h3>
+                    <a href="{% url 'lr:edit_money' money.id %}">{{ money }}</a>
+                </h3>
+            </li>    
+            {% empty %}
+            <li>No money has been added yet.</li>
+        {% endfor %}
+    </ul>
+    
+    <h3>
+        <a href="{% url 'lr:new_money' %}">Add money</a>
+    </h3>
+{% endblock content %}
