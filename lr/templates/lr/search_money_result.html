@@ -1,0 +1,19 @@
+{% load bootstrap3 %}
+{% bootstrap_css %}
+
+<div class="container">
+    <div class="page-header">
+        {% block header %}
+            <h2>Search money result:</h2>
+        {% endblock header %}
+    </div>
+    
+    <div>
+        {% block content %}
+            <form action="" class='form' method=''>
+                {% csrf_token %}
+                {% bootstrap_form form %}
+            </form>
+        {% endblock content %}
+    </div>
+</div><!-- /container -->

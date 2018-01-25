@@ -21,7 +21,8 @@ class Money(models.Model):
     amount = models.DecimalField(max_digits=20, decimal_places=4, default=0)
     cashtype = models.ForeignKey(Cashtype, on_delete=models.DO_NOTHING)
     createddatetime = models.DateTimeField(auto_now_add=True)
-    moneyinout = models.ForeignKey(Moneyinout, on_delete=models.DO_NOTHING)
+    moneyinout = models.ForeignKey(Moneyinout, on_delete=models.DO_NOTHING, default='income')
+#    parentmoney = models.ForeignKey('self', limit_choices_to={'amount__gt': Money__amount}, blank=True, null=True, on_delete=models.DO_NOTHING)
     parentmoney = models.ForeignKey('self', blank=True, null=True, on_delete=models.DO_NOTHING)
 
     def __str__(self):

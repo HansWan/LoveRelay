@@ -5,9 +5,28 @@
     <h2>Edit money:</h2>
 {% endblock header %}
 
+
+
 {% block content %}
-    
-    <form action="{% url 'lr:edit_money' money_id %}" class='form' method='post'>
+    <script>
+
+        window.addEventListener("load", function(){
+            var obj = document.getElementById("myform")["id_moneyinout"];
+            obj.addEventListener("change", function(){
+                set_parentmoney();
+                }, false);
+            obj = null;
+            }, false);
+            
+        function set_parentmoney(){
+            if (document.getElementById("myform")["id_moneyinout"].selectedIndex == 0){
+                document.getElementById("myform")["id_parentmoney"].selectedIndex = 0;
+            };
+        }
+        
+    </script>    
+
+    <form id="myform" action="{% url 'lr:edit_money' money_id %}" class='form' onsubmit="return vf()" method='post'>
         {% csrf_token %}
         {% bootstrap_form form %}
         
@@ -15,4 +34,5 @@
             <button name='submit'>save changes</button>
         {% endbuttons %}
     </form>
+
 {% endblock content %}

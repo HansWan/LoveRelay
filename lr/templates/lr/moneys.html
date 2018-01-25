@@ -10,7 +10,8 @@
         {% for money in moneys %}
             <li>
                 <h3>
-                    {{ money }}<small><a href="{% url 'lr:edit_money' money.id %}"> - edit</a></small>
+                    {{ money }}
+                    <small><a href="{% url 'lr:edit_money' money.id %}"> - edit</a></small>
                 </h3>
             </li>    
             {% empty %}

@@ -21,8 +21,9 @@ def new_money(request):
     else:
         form = MoneyForm(request.POST)
         if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('lr:moneys'))
+            if validate_money(request, form):
+                form.save()
+                return HttpResponseRedirect(reverse('lr:moneys'))
     context =  {'form': form}
     return render(request, 'lr/new_money.html', context)
     
@@ -34,8 +35,53 @@ def edit_money(request, money_id):
     else:
         form = MoneyForm(instance=money, data=request.POST)
         if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('lr:moneys'))
+            if validate_money(request, form):
+                form.save()
+                return HttpResponseRedirect(reverse('lr:moneys'))
     context = {'money_id': money_id, 'form': form}
     return render(request, 'lr/edit_money.html', context)
         
+def validate_money(request, form):
+    #must store amount, otherwise errors occur if use below value twice
+
+    new_amount = form.cleaned_data['amount']
+
+    #outcome must have a parentmoney, and it must be less then parentmoney amount
+    if form.cleaned_data['moneyinout'].moneyinout == 'outcome':
+        if form.cleaned_data['parentmoney'] == None:
+            form.add_error("parentmoney", "Please set a parentmoney if you use money!")
+        elif new_amount > form.cleaned_data['parentmoney'].amount:
+            form.add_error("amount", "Please don't put money bigger than its parent money!")
+
+    #if income, set parentmoney blank
+#    if form.cleaned_data['moneyinout'].moneyinout == 'income':
+#        form.cleaned_data['parentmoney'] = ""
+#        context = {'money_id': money_id, 'form': form}
+#        render(request, 'lr/edit_money.html', context)
+        
+    #no need to check amount if income
+
+    if form.errors:
+        return False
+    else:
+        return True
+
+
+def search_money(request):
+    return render(request, 'lr/search_money.html')
+
+def search_money_result(request, money_id):
+    money = Money.objects.get(id=money_id)
+    
+    if request.method != 'POST':
+        form = MoneyForm(instance=money)
+#    else:
+#        form = MoneyForm(instance=money, data=request.POST)
+#        if form.is_valid():
+#            if validate_money(request, form):
+#                form.save()
+#                return HttpResponseRedirect(reverse('lr:moneys'))
+    context = {'money_id': money_id, 'form': form}
+    return render(request, 'lr/search_money_result.html', context)
+    
+    

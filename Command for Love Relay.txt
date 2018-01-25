@@ -81,6 +81,15 @@ git commit -m "initialize Love Relay"
 https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/001374385852170d9c7adf13c30429b9660d0eb689dd43a000
 
 
+
+
+python自带的命令建一个web服务器：
+DOS方式
+进到想作为web服务根目录的目录下
+python -m http.server --cgi 8080
+http://localhost:8080/或http://127.0.0.1:8080/都可以
+
+
 git remote add lr git@github.com:HansWan/LoveRelay.git
 git pull lr master --allow-unrelated-histories
 git push -u lr master
