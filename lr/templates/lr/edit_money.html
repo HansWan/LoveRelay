@@ -19,14 +19,14 @@
             }, false);
             
         function set_parentmoney(){
-            if (document.getElementById("myform")["id_moneyinout"].selectedIndex == 0){
+/*            if (document.getElementById("myform")["id_moneyinout"].selectedIndex == 0){
                 document.getElementById("myform")["id_parentmoney"].selectedIndex = 0;
-            };
+*/            };
         }
         
     </script>    
 
-    <form id="myform" action="{% url 'lr:edit_money' money_id %}" class='form' onsubmit="return vf()" method='post'>
+    <form id="myform" action="{% url 'lr:edit_money' money_id %}" class='form' method='post'>
         {% csrf_token %}
         {% bootstrap_form form %}
         

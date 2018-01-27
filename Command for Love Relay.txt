@@ -33,7 +33,10 @@ cmd
 cd C:\Users\Administrator\Documents\Files\ITL\Python\python_work\LoveRelay
 C:\Users\Administrator\Documents\Files\ITL\Python\python_work\LoveRelay\loverelay\Scripts\activate
 python manage.py runserver
-
+另打开一个dos窗口，进入shell，交互命令，以方便检查数据
+cd C:\Users\Administrator\Documents\Files\ITL\Python\python_work\LoveRelay
+C:\Users\Administrator\Documents\Files\ITL\Python\python_work\LoveRelay\loverelay\Scripts\activate
+python manage.py shell
 
 三、开始建应用程序
 10、创建应用程序
@@ -46,6 +49,9 @@ python manage.py startapp lr
 12、在settings.py中登记app lr
 
 13、把models中定义的表同步到数据库中
+要先进入虚拟环境
+cd C:\Users\Administrator\Documents\Files\ITL\Python\python_work\LoveRelay
+C:\Users\Administrator\Documents\Files\ITL\Python\python_work\LoveRelay\loverelay\Scripts\activate
 python manage.py makemigrations lr
 python manage.py migrate
 

@@ -1,13 +1,12 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>learning Ajax</title>
+{% extends 'lr/base.html' %}
+{% load bootstrap3 %}
 
+{% block header %}
+    <h2>Search money:</h2>
+{% endblock header %}
 
-</head>
+{% block content %}
 
-<body>
 <script>
 
 function search_money(){
@@ -44,11 +43,11 @@ function returnFun(){
 
 </script>
 
-<label for="moneyid">MoneyID:</label>
-<input placeholder="input money id here" id="moneyid" name="moneyid" type="text">
-<button type="button" id="search" name="search" onclick="search_money()">search</button>
-<p id="p1">search_result</p>
+<label for="moneyid" >MoneyID:</label>
+<input placeholder="input money id here" id="moneyid" name="moneyid" type="text" class='input'>
 
-</body>
+<button onclick="search_money()">search</button>
 
-</html>
+<p id="p1" class='p'></p>
+
+{% endblock content %}

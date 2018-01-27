@@ -1,0 +1,54 @@
+{% extends 'lr/base.html' %}
+{% load bootstrap3 %}
+
+{% block header %}
+    <h2>Delete money:</h2>
+{% endblock header %}
+
+
+
+{% block content %}
+    <script>
+
+        window.addEventListener("load", function(){
+            var obj = document.getElementById("myform")["id_moneyinout"];
+            obj.addEventListener("change", function(){
+                set_parentmoney();
+                }, false);
+            obj = null;
+            }, false);
+            
+        function set_parentmoney(){
+            if (document.getElementById("myform")["id_moneyinout"].selectedIndex == 0){
+                document.getElementById("myform")["id_parentmoney"].selectedIndex = 0;
+            };
+        }
+        
+        function is_parentmoney (money_id){
+            var XHR = new XMLHttpRequest();
+            var v1 = moneyid;
+            url = '/search_money_result/' + v1
+            XHR.open('GET', url, false);
+            XHR.send(null);
+            document.getElementById("p1").innerHTML=XHR.responseText;
+            
+        }
+    </script>    
+
+    <form id="myform" action="{% url 'lr:delete_money' money_id %}" class='form' method='post'>
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        
+        {% if money.candelete %}
+            {% buttons %}
+                <button name='submit'>delete money</button>
+            {% endbuttons %}
+        {% else %}
+            {% buttons %}
+                <button name='submit' disabled='disabled' title='Parentmoney, not allowed to delete.'>delete money</button>
+            {% endbuttons %}
+            
+        {% endif %}
+    </form>
+
+{% endblock content %}

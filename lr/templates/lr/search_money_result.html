@@ -3,17 +3,22 @@
 
 <div class="container">
     <div class="page-header">
-        {% block header %}
-            <h2>Search money result:</h2>
-        {% endblock header %}
+        {% if not form %}
+            {% block header %}
+                <h2>{{ search_result }}</h2>
+            {% endblock header %}
+        {% endif %}
     </div>
     
     <div>
         {% block content %}
-            <form action="" class='form' method=''>
-                {% csrf_token %}
-                {% bootstrap_form form %}
-            </form>
+            {% if form %}
+                <form action="{% url 'lr:edit_money' money_id %}" class='form' method='post'>
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                </form>
+            {% endif %}
+
         {% endblock content %}
     </div>
 </div><!-- /container -->
