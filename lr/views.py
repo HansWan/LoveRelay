@@ -4,7 +4,7 @@ from django.urls import reverse
 #from django.core.urlresolvers import reverse    #removed
 
 from .models import Money
-from .forms import MoneyForm
+from .forms import MoneyForm, MoneyFormDetail
 
 # Create your views here.
 def index(request):
@@ -94,7 +94,13 @@ def validate_money(request, form):
 
 
 def search_money(request):
-    return render(request, 'lr/search_money.html')
+    if request.method != 'POST':
+        money = Money.objects.get(id=4)
+        form = MoneyFormDetail(instance=money)
+        context = {'form': form}
+        return render(request, 'lr/search_money.html', context)
+#    else:
+#    return render(request, 'lr/search_money.html')
 
 def search_money_result(request, money_id):
     try:

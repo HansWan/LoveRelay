@@ -26,6 +26,7 @@ class Money(models.Model):
 #    parentmoney = models.ForeignKey('self', limit_choices_to={'amount__gt': Money__amount}, blank=True, null=True, on_delete=models.DO_NOTHING)
     parentmoney = models.ForeignKey('self', blank=True, null=True, on_delete=models.DO_NOTHING)
     comment = models.CharField(max_length=50, blank=True)
+    test = models.CharField(max_length=20, blank=True)
 
     def __str__(self):
         return u'%+15s %+20s %+10s' % (self.amount, self.user, self.cashtype)

@@ -2,7 +2,7 @@
 {% load bootstrap3 %}
 
 {% block header %}
-    <h2>Search money:</h2>
+    <h2>Search money</h2>
 {% endblock header %}
 
 {% block content %}
@@ -43,11 +43,23 @@ function returnFun(){
 
 </script>
 
+    <form action="{% url 'lr:moneys' %}" class='form' method='post'>
+        {% csrf_token %}
+
+        <div class="form-group"><label class="control-label" for="id_id">ID</label><input type="number" name="id" value={{ form.instance.id }} step="0.0001" class="form-control" placeholder="ID" title="" required id="id_id" /></div>
+
+        {% bootstrap_form form %}
+        
+        {% buttons %}
+            <button name='submit'>search money</button>
+        {% endbuttons %}
+    </form>
+<!--
 <label for="moneyid" >MoneyID:</label>
 <input placeholder="input money id here" id="moneyid" name="moneyid" type="text" class='input'>
 
 <button onclick="search_money()">search</button>
 
 <p id="p1" class='p'></p>
-
+-->
 {% endblock content %}

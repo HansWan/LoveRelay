@@ -2,12 +2,14 @@
 {% load bootstrap3 %}
 
 {% block header %}
-    <h2>Money <small><small><a href="{% url 'lr:new_money' %}">Add money</a></small></small></h2>
+    <h2>Money</h2>
+    <a href="{% url 'lr:new_money' %}" style="display:block;text-align: right;">Add money</a>
 {% endblock header %}
 
 {% block content %}
     
     <table class="table">
+            <td width=50 align=right><b>ID</b></td>
             <td width=150 align=right><b>Amount</b></td>
             <td width=150 align=right><b>User</b></td>
             <td width=150 align=right><b>Cashtype</b></td>
@@ -16,6 +18,7 @@
         
         {% for money in moneys %}
             <tr>
+                <td width=50 align=right><h4>{{ money.id }}</h4></td>
                 <td width=150 align=right><h4>{{ money.amount }}</h4></td>
                 <td width=150 align=right><h4>{{ money.user }}</h4></td>
                 <td width=150 align=right><h4>{{ money.cashtype }}</h4></td>
