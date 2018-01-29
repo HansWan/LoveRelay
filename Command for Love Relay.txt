@@ -77,15 +77,73 @@ pip install django-bootstrap3
 https://git-scm.com/download/win
 运行git bash
 
-19、初始化一个project
+20、初始化一个project
 cd /C/Users/Administrator/Documents/Files/ITL/Python/python_work/LoveRelay
 git init
-git add .
+git
 git commit -m "initialize Love Relay"
 网站上建项目Love Relay
 (第一往网站推文件，需要添加ssh key），参见：
 https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/001374385852170d9c7adf13c30429b9660d0eb689dd43a000
 
+21、同步文件到服务器
+cd /C/Users/Administrator/Documents/Files/ITL/Python/python_work/LoveRelay
+git add .
+git commit -m "updated "
+git push lr master
+
+五、安装Apache服务器
+22、下载apache2.4
+http://www.apachelounge.com/download/
+
+23、直接解压上面下载的zip文件，放c:\Apach24。在环境变量中增加path c:\apache24\bin
+
+24、修改c:\apache24\conf\httpd.conf，按如下内容改：
+ServerRoot "c:/Apache24"
+Listen 127.0.0.1:8081
+ServerName www.example.com:8081
+DocumentRoot "c:/Apache24/htdocs"
+<Directory "c:/Apache24/htdocs">
+#下面这几行是添加进去的，放在所有LoadModule...之后
+LoadFile "c:/python/python36.dll"
+LoadModule wsgi_module "c:/python/lib/site-packages/mod_wsgi/server/mod_wsgi.cp36-win_amd64.pyd"
+#项目的wsgi.py配置文件路径  
+WSGIScriptAlias / C:/Users/Administrator/Documents/Files/ITL/Python/python_work/LoveRelay/loverelay/wsgi.py
+WSGIPythonHome C:/Python
+#项目路径  
+WSGIPythonPath C:/Users/Administrator/Documents/Files/ITL/Python/python_work/LoveRelay
+<Directory C:/Users/Administrator/Documents/Files/ITL/Python/python_work/LoveRelay/loverelay>
+<Files wsgi.py>
+    Require all granted
+</Files>
+</Directory>
+
+25、在IE中试一下
+http://127.0.0.1:8081/index.html
+如果出现It works!证明apache配置成功。
+
+26、安装mod_wsgi
+pip install wheel
+下载一个mod_wsgi，注意python、apache的版本和win32/64位的选择
+http://www.lfd.uci.edu/~gohlke/pythonlibs/#mod_wsgi
+把下载的whl文件放c:\temp
+pip install c:\temp\???.whl(指whl文件全名)
+
+27、配置apache24, mod_wsgi, django项目
+打开C:\Users\Administrator\Documents\Files\ITL\Python\python_work\LoveRelay\loverelay\wsgi.py
+添加
+import sys
+sys.path.append('C:/Users/Administrator/Documents/Files/ITL/Python/python_work/LoveRelay/')
+sys.path.append('C:/Users/Administrator/Documents/Files/ITL/Python/python_work/LoveRelay/loverelay/')
+sys.path.append('C:/Users/Administrator/Documents/Files/ITL/Python/python_work/LoveRelay/loverelay/lib/site-packages/')
+
+28、启动web服务
+cmd
+httpd -k start
+检查c:\apache24\logs\error.log，看服务启动有无报错
+
+29、IE运行
+http://127.0.0.1:8081/admin
 
 
 

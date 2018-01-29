@@ -46,6 +46,10 @@ function returnFun(){
     <form action="{% url 'lr:moneys' %}" class='form' method='post'>
         {% csrf_token %}
 
+        {% buttons %}
+            <button name='submit'>search money</button>
+        {% endbuttons %}
+
         <div class="form-group"><label class="control-label" for="id_id">ID</label><input type="number" name="id" value={{ form.instance.id }} step="0.0001" class="form-control" placeholder="ID" title="" required id="id_id" /></div>
 
         {% bootstrap_form form %}

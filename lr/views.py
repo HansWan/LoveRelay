@@ -4,11 +4,32 @@ from django.urls import reverse
 #from django.core.urlresolvers import reverse    #removed
 
 from .models import Money
-from .forms import MoneyForm, MoneyFormDetail
 
+#from django.forms import BaseFormSet
+from django.forms import formset_factory
+
+from .forms import MoneyForm, MoneydetailForm
+#from .forms import MoneyFormNew
 # Create your views here.
 def index(request):
     return render(request, 'lr/index.html')
+
+
+
+
+#class BaseMoneyFormSet(BaseFormSet):
+#    def add_fields(self, form, index):
+#        super(BaseMoneyFormSet, self).add_fields(form, index)
+#        form.fields["idtest"] = forms.CharField()
+
+
+#MoneyFormSet = formset_factory(MoneyForm, formset=BaseMoneyFormSet)
+#formset = MoneyFormSet()
+
+
+
+
+
 
 def money(request):
     moneys = Money.objects.order_by('-amount')
@@ -95,11 +116,12 @@ def validate_money(request, form):
 
 def search_money(request):
     if request.method != 'POST':
-        money = Money.objects.get(id=4)
-        form = MoneyFormDetail(instance=money)
+        money = Money()
+#        money = Money.objects.get(id=4)
+        form = MoneydetailForm(instance=money)
         context = {'form': form}
         return render(request, 'lr/search_money.html', context)
-#    else:
+#    else :
 #    return render(request, 'lr/search_money.html')
 
 def search_money_result(request, money_id):
@@ -111,7 +133,7 @@ def search_money_result(request, money_id):
         context = {'money_id': money_id, 'form': form, 'search_result': 'Money found:'}
 #        else:
     except:    #no corresponding id
-        context = {'money_id': money_id, 'search_result': 'No money found. Please try again.'}
+        context = {'money_id': money_id, 'search_result': 'No money found! Please try again.'}
     return render(request, 'lr/search_money_result.html', context)
     
     

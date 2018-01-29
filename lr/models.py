@@ -17,6 +17,7 @@ class Moneyinout(models.Model):               #income/outcome
         return self.moneyinout
 
 class Money(models.Model):
+#    id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     amount = models.DecimalField(max_digits=20, decimal_places=4)
     cashtype = models.ForeignKey(Cashtype, on_delete=models.DO_NOTHING, default=1)
@@ -88,5 +89,5 @@ class Userbankinfo(models.Model):
     
     def __str__(self):
         return u'%s %s' % (self.user, self.bank)
-  
-    
+
+
