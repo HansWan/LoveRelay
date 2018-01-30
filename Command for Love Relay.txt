@@ -143,7 +143,31 @@ httpd -k start
 检查c:\apache24\logs\error.log，看服务启动有无报错
 
 29、IE运行
-http://127.0.0.1:8081/admin
+http://127.0.0.1:8081/
+
+30、修改程序之后，需要重启服务，才能生效
+cmd
+httpd -k restart
+
+六、在项目中引用静态文件，如图片（参考https://www.cnblogs.com/lfoder/p/6013142.html）
+31、修改settings.py文件
+STATIC_URL = '/static/'后面添加一行
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+32、在urls.py中导入
+from django.conf import settings
+from django.conf.urls.static import static
+并在urlpatterns后面添加
+ + static(settings.STATIC_URL, document_root = settings.STATIC_ROOT)
+
+33、静态文件必须放在LoveRelay\static\下面
+
+34、在模板文件中引用静态文件
+{% load static %}
+<img src="{% static 'a.jpg' %}" alt="my image" height="200"></img>
+
+
+
 
 
 

@@ -19,13 +19,13 @@ class MoneyForm(forms.ModelForm):
 
     def clean_user(self):
         user = self.cleaned_data['user']
-        if str(user) != 'wanjun':
-            raise forms.ValidationError("Please input correct info.")
+#        if str(user) != 'wanjun':
+#            raise forms.ValidationError("Please input correct info.")
         return user
 
     def clean(self):
         form_data = self.cleaned_data
-        if form_data['parentmoney'] != None and form_data['amount'] < form_data['parentmoney'].amount:
+        if form_data['parentmoney'] != None and form_data['amount'] > form_data['parentmoney'].amount:
             self._errors["amount"] = ["Please input amount more then parentmoney."]
             del form_data['amount']
         return form_data

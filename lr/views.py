@@ -136,4 +136,6 @@ def search_money_result(request, money_id):
         context = {'money_id': money_id, 'search_result': 'No money found! Please try again.'}
     return render(request, 'lr/search_money_result.html', context)
     
-    
+def test(request):
+    image_data = open("lr/a.jpg", "rb").read()
+    return HttpResponse(image_data, mimetype="image/jpg")   

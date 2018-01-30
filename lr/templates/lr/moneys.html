@@ -4,6 +4,10 @@
 {% block header %}
     <h2>Money</h2>
     <a href="{% url 'lr:new_money' %}" style="display:block;text-align: right;">Add money</a>
+    
+    {% load static %}
+    <img src="{% static 'a.jpg' %}" alt="my image" height="200"></img>
+
 {% endblock header %}
 
 {% block content %}
