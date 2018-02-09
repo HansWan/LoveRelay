@@ -9,7 +9,10 @@ class Cashtype(models.Model):
         
     def __str__(self):
         return self.cashtype
-        
+
+class Purpose(models.Model):
+    purpose = models.CharField(max_length=20, blank=True)
+            
 class Moneyinout(models.Model):               #income/outcome
     moneyinout = models.CharField(max_length=10, blank=True)
     
@@ -22,6 +25,9 @@ class Money(models.Model):
     amount = models.DecimalField(max_digits=20, decimal_places=4)
     cashtype = models.ForeignKey(Cashtype, on_delete=models.DO_NOTHING, default=1)
     createddatetime = models.DateTimeField(auto_now_add=True)
+    beneficiarydesignated = models.BooleanField(default=False)
+    donatordesignated = models.BooleanField(default=False)
+    purpose = models.ForeignKey(Purpose, on_delete=models.DO_NOTHING, blank=True, default=1)  #define the purpose of money: donation, refund, request, etc.
 #    moneyinout = models.ForeignKey(Moneyinout, on_delete=models.DO_NOTHING)
     moneyinout = models.ForeignKey(Moneyinout, on_delete=models.DO_NOTHING, default=1)
 #    parentmoney = models.ForeignKey('self', limit_choices_to={'amount__gt': Money__amount}, blank=True, null=True, on_delete=models.DO_NOTHING)

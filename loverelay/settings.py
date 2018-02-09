@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     
     #self developed apps
     'lr', 
-    'loverelay',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -142,6 +142,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 BOOTSTRAP3 = {
     'include_jquery': True,
     }
-    
+
+#settings for loverelay
+LOGIN_URL = '/users/login/'    
     
     

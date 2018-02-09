@@ -2,11 +2,9 @@
 {% load bootstrap3 %}
 
 {% block header %}
-    <h2>Money</h2>
-    <a href="{% url 'lr:new_money' %}" style="display:block;text-align: right;">Add money</a>
+    <h4>Donation/Request</h4>
+<!--    <a href="{% url 'lr:new_money' %}" style="display:block;text-align: right;">Add money</a>    -->
     
-    {% load static %}
-    <img src="{% static 'a.jpg' %}" alt="my image" height="200"></img>
 
 {% endblock header %}
 
@@ -17,6 +15,8 @@
             <td width=150 align=right><b>Amount</b></td>
             <td width=150 align=right><b>User</b></td>
             <td width=150 align=right><b>Cashtype</b></td>
+            <td width=150 align=right><b>Money In/Out</b></td>
+            <td width=15></td>
             <td width=15></td>
             <td width=350></td>
         
@@ -26,11 +26,21 @@
                 <td width=150 align=right><h4>{{ money.amount }}</h4></td>
                 <td width=150 align=right><h4>{{ money.user }}</h4></td>
                 <td width=150 align=right><h4>{{ money.cashtype }}</h4></td>
+                {% ifequal money.moneyinout_id 2 %}         <!--没法直接判断moneyinout='outcome'，不晓得为什么-->
+                    <td width=150 align=right><h4 style="color:red ">{{ money.moneyinout }}</h4></td>
+                {% else %}
+                    <td width=150 align=right><h4>{{ money.moneyinout }}</h4></td>
+                {% endifequal %}
                 <td width=15><h4><small><a href="{% url 'lr:edit_money' money.id %}">edit</a></small></h4></td>
                 {% if money.candelete %}
-                    <td width=350><h4><small><a href="{% url 'lr:delete_money' money.id %}">delete</a></small></h4></td>
+                    <td width=15><h4><small><a href="{% url 'lr:delete_money' money.id %}">delete</a></small></h4></td>
                 {% else %}
-                    <td width=350><h4><small><a href="{% url 'lr:delete_money' money.id %}" disabled='disabled' title='Parentmoney, not allowed to delete.'>delete</a></small></h4></td>
+                    <td width=15><h4><small><a href="{% url 'lr:delete_money' money.id %}" disabled='disabled' title='Parentmoney, not allowed to delete.'></a></small></h4></td>
+                {% endif %}
+                {% if money.canrefund %}
+                    <td width=350><h4><small><a href="{% url 'lr:refund' money.id %}">refund</a></small></h4></td>
+                {% else %}
+                    <td width=350><h4><small><a href="{% url 'lr:refund' money.id %}" disabled='disabled' title='Not necessary to refund.'></a></small></h4></td>
                 {% endif %}
             </tr>
         {% empty %}

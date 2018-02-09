@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.models import User
 from .models import Money
 
 class MoneyForm(forms.ModelForm):
@@ -9,13 +10,28 @@ class MoneyForm(forms.ModelForm):
 #        self.initial['user']=""
 #        self.initial['cashtype']=""
 #        self.initial['parentmoney']=""
-        try:
 #            if self.initial['moneyinout']==1:
 #                self.initial['parentmoney']=""
-            if self.initial['amount'] != None:
-                self.fields['parentmoney'].queryset = Money.objects.filter(amount__gt=self.initial['amount']).order_by('-amount')
-        except:
-            pass
+        
+     #set user unchangable
+#        try:
+        if self.data.get('user') != None:
+            self.fields['user'].queryset = User.objects.filter(id=self.data.get('user'))
+        else:
+            if type(self.initial.get('user')) == int:
+                self.fields['user'].queryset = User.objects.filter(id=self.initial.get('user'))
+            else:
+                self.fields['user'].queryset = User.objects.filter(username=self.initial.get('user'))
+#        except:
+#            pass
+
+#     #set parentmoney.amount > new amount
+#        try:
+#            if self.initial['amount'] != None:
+#                self.fields['parentmoney'].queryset = Money.objects.filter(amount__gt=self.initial['amount']).order_by('-amount')
+#        except:
+#            pass
+#
 
     def clean_user(self):
         user = self.cleaned_data['user']
@@ -32,8 +48,32 @@ class MoneyForm(forms.ModelForm):
                 
     class Meta:
         model = Money
-        fields = ['amount', 'moneyinout', 'user', 'cashtype', 'parentmoney']
-        labels = {'amount' : 'Amount', 'moneyinout': 'Money In/Out', 'user': 'User', 'cashtype': 'Cashtype', 'parentmoney': 'Parentmoney'}
+        fields = ['id', 'amount', 'moneyinout', 'user', 'cashtype', 'beneficiarydesignated', 'parentmoney']
+        labels = {'amount' : 'Amount', 'moneyinout': 'Money In/Out', 'user': 'User', 'cashtype': 'Cashtype', 'beneficiarydesignated': 'Beneficiary Designated', 'parentmoney': 'Parentmoney'}
+
+class RequestForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(RequestForm, self).__init__(*args, **kwargs)
+        if self.data.get('user') != None:
+            self.fields['user'].queryset = User.objects.filter(id=self.data.get('user'))
+        else:
+            if type(self.initial.get('user')) == int:
+                self.fields['user'].queryset = User.objects.filter(id=self.initial.get('user'))
+            else:
+                self.fields['user'].queryset = User.objects.filter(username=self.initial.get('user'))
+        self.fields['parentmoney'].queryset = Money.objects.filter(moneyinout=1).order_by('-amount')
+
+    def clean(self):
+        form_data = self.cleaned_data
+        if form_data['parentmoney'] != None and form_data['amount'] > form_data['parentmoney'].amount:
+            self._errors["amount"] = ["Please input amount more then parentmoney."]
+            del form_data['amount']
+        return form_data
+                
+    class Meta:
+        model = Money
+        fields = ['amount', 'moneyinout', 'user', 'cashtype', 'donatordesignated', 'parentmoney']
+        labels = {'amount' : 'Amount', 'moneyinout': 'Money In/Out', 'user': 'User', 'cashtype': 'Cashtype', 'donatordesignated': 'Donator Designated', 'parentmoney': 'Parentmoney'}
 
 class MoneydetailForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -57,7 +97,10 @@ class MoneydetailForm(forms.ModelForm):
 #        fields = ['id', 'amount', 'moneyinout', 'user', 'cashtype', 'parentmoney', 'test']
         labels = {'id': 'ID', 'amount': 'Amount', 'moneyinout': 'Money In/Out', 'user': 'User', 'cashtype': 'Cashtype', 'parentmoney': 'Parentmoney', 'test': 'Test'}
 
-class MoneyFormNew(forms.Form):
-    user = forms.CharField()
+class MoneylistForm(forms.Form):
     amount = forms.IntegerField()
+    moneyinout = forms.IntegerField()
+    user = forms.CharField()
+    cashtype = forms.IntegerField()
+    parentmoney = forms.IntegerField()
     
