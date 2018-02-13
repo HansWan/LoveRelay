@@ -11,17 +11,22 @@
     <script>
 
         window.addEventListener("load", function(){
-            var obj = document.getElementById("myform")["id_moneyinout"];
-            obj.addEventListener("change", function(){
-                set_parentmoney();
-                }, false);
+            var obj = document.getElementById("myform")["id_purpose"];
+            obj.disabled = true;
+/*            
+            document.getElementById("myform")["id_parentmoney"].disabled = true;
+            document.getElementById("myform")["id_beneficiarydesignated"].disabled = true
+*/            
             obj = null;
             }, false);
-            
+           
         function set_parentmoney(){
-/*            if (document.getElementById("myform")["id_moneyinout"].selectedIndex == 0){
+/*
+            window.alert('changed');
+            if (document.getElementById("myform")["id_moneyinout"].selectedIndex == 0){
                 document.getElementById("myform")["id_parentmoney"].selectedIndex = 0;
-*/            };
+            };
+*/
         }
         
     </script>    

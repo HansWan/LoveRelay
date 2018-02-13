@@ -48,8 +48,8 @@ class MoneyForm(forms.ModelForm):
                 
     class Meta:
         model = Money
-        fields = ['id', 'amount', 'moneyinout', 'user', 'cashtype', 'beneficiarydesignated', 'parentmoney']
-        labels = {'amount' : 'Amount', 'moneyinout': 'Money In/Out', 'user': 'User', 'cashtype': 'Cashtype', 'beneficiarydesignated': 'Beneficiary Designated', 'parentmoney': 'Parentmoney'}
+        fields = ['id', 'amount', 'purpose', 'user', 'cashtype', 'beneficiarydesignated', 'parentmoney']
+        labels = {'amount' : 'Amount', 'purpose': 'Purpose', 'user': 'User', 'cashtype': 'Cashtype', 'beneficiarydesignated': 'Beneficiary Designated', 'parentmoney': 'Parentmoney'}
 
 class RequestForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -61,7 +61,7 @@ class RequestForm(forms.ModelForm):
                 self.fields['user'].queryset = User.objects.filter(id=self.initial.get('user'))
             else:
                 self.fields['user'].queryset = User.objects.filter(username=self.initial.get('user'))
-        self.fields['parentmoney'].queryset = Money.objects.filter(moneyinout=1).order_by('-amount')
+        self.fields['parentmoney'].queryset = Money.objects.filter(purpose=1).order_by('-amount')
 
     def clean(self):
         form_data = self.cleaned_data
@@ -72,8 +72,8 @@ class RequestForm(forms.ModelForm):
                 
     class Meta:
         model = Money
-        fields = ['amount', 'moneyinout', 'user', 'cashtype', 'donatordesignated', 'parentmoney']
-        labels = {'amount' : 'Amount', 'moneyinout': 'Money In/Out', 'user': 'User', 'cashtype': 'Cashtype', 'donatordesignated': 'Donator Designated', 'parentmoney': 'Parentmoney'}
+        fields = ['amount', 'purpose', 'user', 'cashtype', 'donatordesignated', 'parentmoney']
+        labels = {'amount' : 'Amount', 'purpose': 'Purpose', 'user': 'User', 'cashtype': 'Cashtype', 'donatordesignated': 'Donator Designated', 'parentmoney': 'Parentmoney'}
 
 class MoneydetailForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -94,12 +94,11 @@ class MoneydetailForm(forms.ModelForm):
     class Meta:
         model = Money
         fields = '__all__'
-#        fields = ['id', 'amount', 'moneyinout', 'user', 'cashtype', 'parentmoney', 'test']
-        labels = {'id': 'ID', 'amount': 'Amount', 'moneyinout': 'Money In/Out', 'user': 'User', 'cashtype': 'Cashtype', 'parentmoney': 'Parentmoney', 'test': 'Test'}
+        labels = {'id': 'ID', 'amount': 'Amount', 'purpose': 'Purpose', 'user': 'User', 'cashtype': 'Cashtype', 'parentmoney': 'Parentmoney', 'test': 'Test'}
 
 class MoneylistForm(forms.Form):
     amount = forms.IntegerField()
-    moneyinout = forms.IntegerField()
+    purpose = forms.IntegerField()
     user = forms.CharField()
     cashtype = forms.IntegerField()
     parentmoney = forms.IntegerField()

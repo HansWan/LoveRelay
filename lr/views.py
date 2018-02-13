@@ -19,14 +19,14 @@ def money(request):
     moneys = Money.objects.filter(user=request.user).order_by('-amount')
     for money in moneys:
         money.candelete = not money.money_set.count()
-        money.canrefund = (money.moneyinout.id == 2)
+        money.canrefund = (money.purpose.id == 4)
     context = {'moneys': moneys}
     return render(request, 'lr/moneys.html', context)
 
 @login_required
 def donation(request):
     if request.method != 'POST':
-        form = MoneyForm(initial={'user': request.user})
+        form = MoneyForm(initial={'user': request.user, 'purpose': 1})
     else:
         form = MoneyForm(request.POST)
         if form.is_valid():
@@ -39,7 +39,7 @@ def donation(request):
 @login_required
 def request(request):
     if request.method != 'POST':
-        form = RequestForm(initial={'user': request.user, 'moneyinout': 2})
+        form = RequestForm(initial={'user': request.user, 'purpose': 2})
     else:
         form = RequestForm(request.POST)
         if form.is_valid():
@@ -50,16 +50,29 @@ def request(request):
     return render(request, 'lr/request.html', context)
 
 @login_required
+def loan(request):
+    if request.method != 'POST':
+        form = RequestForm(initial={'user': request.user, 'purpose': 4})
+    else:
+        form = RequestForm(request.POST)
+        if form.is_valid():
+            if validate_money(request, form):
+                form.save()
+                return HttpResponseRedirect(reverse('lr:moneys'))
+    context =  {'form': form}
+    return render(request, 'lr/loan.html', context)
+
+@login_required
 def refund(request, money_id):
     money = Money.objects.get(id=money_id)
     
-    if money.moneyinout.id == 1:      #income, not allowed to refund
-        context = {'msg': 'The # ' + str(money_id) + ' is an income item, and not allowed to refund.'}
+    if money.purpose.id != 4:      #income, not allowed to refund
+        context = {'msg': 'The # ' + str(money_id) + ' is not a load item, and not allowed to refund.'}
         return render(request, 'lr/showmsg.html', context)
     if request.method != 'POST':
         form = MoneyForm(instance=money)
     else:
-        form = MoneyForm(data={'amount': request.POST['amount'], 'moneyinout': 1, 'parentmoney': money_id, 'cashtype': 1, 'user': request.POST['user']})
+        form = MoneyForm(data={'amount': request.POST['amount'], 'purpose': 3, 'parentmoney': money_id, 'cashtype': 1, 'user': request.POST['user']})
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse('lr:moneys'))
@@ -79,6 +92,77 @@ def moneylist(request):
     context = {'formset': formset}
     return render(request, 'lr/moneylist.html', context)
 
+def moneytrack(request, money_id):
+    moneys = Money.objects.filter(id=money_id)
+    if not moneys:
+        context = {'msg': 'The # ' + str(money_id) + ' does not exist, please try again.'}
+        return render(request, 'lr/showmsg.html', context)
+    for money in moneys:
+        money.seq = 1
+
+    import time
+    f0 = open("c://temp//1.txt", "a+")
+    f0.write(time.asctime(time.localtime(time.time()))+'\n')
+    ini = 'moneys.count(), outer program before'
+    f0.write(ini+'_: '+str(id(moneys))+':     '+str(moneys.count())+'\n')
+    f0.write(time.asctime(time.localtime(time.time()))+'\n')
+    f0.close()
+
+    allmoneys = findallmoney(money_id, moneys)
+
+    import time
+    f0 = open("c://temp//1.txt", "a+")
+    f0.write(time.asctime(time.localtime(time.time()))+'\n')
+    ini = 'moneys.count(), outer program after'
+    f0.write(ini+'_: '+str(id(allmoneys))+':     '+str(allmoneys.count())+'\n')
+    f0.write(time.asctime(time.localtime(time.time()))+'\n')
+    f0.close()
+
+    for money in allmoneys:
+        money.candelete = not money.money_set.count()
+        money.canrefund = (money.purpose.id == 4)
+    context = {'moneys': allmoneys}
+    return render(request, 'lr/moneys.html', context)
+    
+def findallmoney(money_id, moneys):
+    childmoneyset = Money.objects.filter(parentmoney=money_id)
+    for cm in childmoneyset:
+        cmset = Money.objects.filter(id=cm.id)
+        for money in cmset:
+            money.seq = moneys.count() + 1
+
+        for money in moneys:
+            import time
+            f0 = open("c://temp//1.txt", "a+")
+            f0.write(time.asctime(time.localtime(time.time()))+'\n')
+            ini = 'before combile moneys.count()'
+            f0.write(str(cm.id)+'\n')
+            f0.write(ini+'_: '+str(id(moneys))+':     '+str(moneys.count())+'\n')
+            f0.write(time.asctime(time.localtime(time.time()))+'\n')
+            f0.close()
+    
+        moneys = moneys.union(cmset)
+
+        import time
+        f0 = open("c://temp//1.txt", "a+")
+        f0.write(time.asctime(time.localtime(time.time()))+'\n')
+        ini = 'after combile moneys.count()'
+        f0.write(ini+'_: '+str(id(moneys))+':     '+str(moneys.count())+'\n')
+        f0.write(time.asctime(time.localtime(time.time()))+'\n')
+        f0.close()
+    
+        findallmoney(cm.id, moneys)
+
+    import time
+    f0 = open("c://temp//1.txt", "a+")
+    f0.write(time.asctime(time.localtime(time.time()))+'\n')
+    ini = 'moneys.count(), before return'
+    f0.write(ini+'_: '+str(id(moneys))+':     '+str(moneys.count())+'\n')
+    f0.write(time.asctime(time.localtime(time.time()))+'\n')
+    f0.close()
+
+    return moneys
+    
 def new_money(request):
     if request.method != 'POST':
         form = MoneyForm()

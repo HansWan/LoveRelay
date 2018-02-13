@@ -1,3 +1,10 @@
-from django.test import TestCase
+def re(x):
+    global y
+    print(x)
+    y=30
+    print(x)
 
-# Create your tests here.
+x=20
+y=1
+re(x)
+print(y)

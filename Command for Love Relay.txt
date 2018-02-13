@@ -54,6 +54,8 @@ cd C:\Users\Administrator\Documents\Files\ITL\Python\python_work\LoveRelay
 C:\Users\Administrator\Documents\Files\ITL\Python\python_work\LoveRelay\loverelay\Scripts\activate
 python manage.py makemigrations lr
 python manage.py migrate
+当执行有错时，可以删除migrations目录下对应的py文件，相当于操作回退，然后可以重复操作。
+对于有PK外键的表，得先把主表的数据删除掉，才能加得进去引用的表的字段，否则老是提示引用约束建立错误。
 
 14、为lr创建超级用户
 python manage.py createsuperuser

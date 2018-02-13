@@ -10,15 +10,19 @@ class Cashtype(models.Model):
     def __str__(self):
         return self.cashtype
 
-class Purpose(models.Model):
-    purpose = models.CharField(max_length=20, blank=True)
-            
 class Moneyinout(models.Model):               #income/outcome
     moneyinout = models.CharField(max_length=10, blank=True)
     
     def __str__(self):
         return self.moneyinout
 
+class Purpose(models.Model):
+    purpose = models.CharField(max_length=20, blank=True)
+    moneyinout = models.ForeignKey(Moneyinout, on_delete=models.DO_NOTHING, default=1)
+
+    def __str__(self):
+        return self.purpose
+            
 class Money(models.Model):
 #    id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
@@ -27,13 +31,12 @@ class Money(models.Model):
     createddatetime = models.DateTimeField(auto_now_add=True)
     beneficiarydesignated = models.BooleanField(default=False)
     donatordesignated = models.BooleanField(default=False)
-    purpose = models.ForeignKey(Purpose, on_delete=models.DO_NOTHING, blank=True, default=1)  #define the purpose of money: donation, refund, request, etc.
+    purpose = models.ForeignKey(Purpose, on_delete=models.DO_NOTHING, blank=True, null=True, default=1)  #define the purpose of money: donation, refund, request, etc.
 #    moneyinout = models.ForeignKey(Moneyinout, on_delete=models.DO_NOTHING)
-    moneyinout = models.ForeignKey(Moneyinout, on_delete=models.DO_NOTHING, default=1)
+#    moneyinout = models.ForeignKey(Moneyinout, on_delete=models.DO_NOTHING, default=1)
 #    parentmoney = models.ForeignKey('self', limit_choices_to={'amount__gt': Money__amount}, blank=True, null=True, on_delete=models.DO_NOTHING)
     parentmoney = models.ForeignKey('self', blank=True, null=True, on_delete=models.DO_NOTHING)
     comment = models.CharField(max_length=50, blank=True)
-    test = models.CharField(max_length=20, blank=True)
 
     def __str__(self):
         return u'%+15s %+20s %+10s' % (self.amount, self.user, self.cashtype)
