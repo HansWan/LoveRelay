@@ -1,6 +1,8 @@
 from django import forms
+from django.db import connection
+
 from django.contrib.auth.models import User
-from .models import Money
+from .models import Money, Moneynode
 
 class MoneyForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -39,10 +41,31 @@ class MoneyForm(forms.ModelForm):
 #            raise forms.ValidationError("Please input correct info.")
         return user
 
+    def clean_parentmoney(self):
+        if self.initial.get('id') != None and self.cleaned_data['parentmoney'] != None:    #need to check if recursive reference exists
+            cursor = connection.cursor()
+            cursor.execute("call ischild(%s, %s, @p1)", (str(self.cleaned_data['parentmoney'].id), str(self.initial.get('id')),))
+            cur2 = connection.cursor()
+            cur2.execute("select @p1")
+            ischild = cur2.fetchone()[0]
+            if ischild == 1:
+                self._errors["parentmoney"] = ["Parentmoney recursively referred. Please select another parentmoney."]
+        return self.cleaned_data['parentmoney']
+            
+        # if self.cleaned_data['parentmoney'] != None:
+            # parentmoney = self.cleaned_data['parentmoney']
+# #        if str(user) != 'wanjun':
+# #            raise forms.ValidationError("Please input correct info.")
+            # parentmoney0 = Money.objects.get(id=parentmoney.money_id)
+            # return parentmoney0
+        # else:
+            # return None
+
     def clean(self):
         form_data = self.cleaned_data
+#        if form_data['amount'] > form_data['parentmoney'].amount:
         if form_data['parentmoney'] != None and form_data['amount'] > form_data['parentmoney'].amount:
-            self._errors["amount"] = ["Please input amount more then parentmoney."]
+            self._errors["amount"] = ["Please input amount less than parentmoney."]
             del form_data['amount']
         return form_data
                 
@@ -66,7 +89,7 @@ class RequestForm(forms.ModelForm):
     def clean(self):
         form_data = self.cleaned_data
         if form_data['parentmoney'] != None and form_data['amount'] > form_data['parentmoney'].amount:
-            self._errors["amount"] = ["Please input amount more then parentmoney."]
+            self._errors["amount"] = ["Please input amount less than parentmoney."]
             del form_data['amount']
         return form_data
                 

@@ -140,7 +140,7 @@ sys.path.append('C:/Users/Administrator/Documents/Files/ITL/Python/python_work/L
 sys.path.append('C:/Users/Administrator/Documents/Files/ITL/Python/python_work/LoveRelay/loverelay/lib/site-packages/')
 
 28、启动web服务
-cmd
+管理员权限cmd
 httpd -k start
 检查c:\apache24\logs\error.log，看服务启动有无报错
 
@@ -148,7 +148,7 @@ httpd -k start
 http://127.0.0.1:8081/
 
 30、修改程序之后，需要重启服务，才能生效
-cmd
+管理员权限cmd
 httpd -k restart
 
 六、在项目中引用静态文件，如图片（参考https://www.cnblogs.com/lfoder/p/6013142.html）
@@ -168,8 +168,195 @@ from django.conf.urls.static import static
 {% load static %}
 <img src="{% static 'a.jpg' %}" alt="my image" height="200"></img>
 
+七、mySQL里面的几个存储过程
+35、判断两个id是否有引用关系
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ischild`(in id1 int, in id2 int, out ischild int)
+BEGIN
+  DECLARE done int default 0;
+  SET SQL_SAFE_UPDATES = 0 ;
+  DROP TABLE IF EXISTS temp;
+  CREATE TABLE temp 
+      (
+        id int,
+        pid int, 
+        level int 
+      );
+  
+  set ischild = 0;
+  Set @Level=0 ;
+  insert into temp (id, pid, level)
+      select id, parentmoney_id, @level
+	  from lr_money 
+      where parentmoney_id=id2;
+  
+  select id from temp where id=id1;
+  if FOUND_ROWS() > 0 then
+	set ischild = 1;
+    set done = 1;
+  end if;
+
+  while done = 0 do
+    set @level=@level+1;
+    insert into temp (id, pid, level)
+      select id, parentmoney_id, @level
+	  from lr_money 
+      where parentmoney_id in
+        (select id from temp where level=@level-1);
+	if found_rows()= 0 then
+      set done = 1;
+	else
+      select id from temp where id=id1 limit 1;
+	  if FOUND_ROWS() > 0 then
+	    set ischild = 1;
+        set done = 1;
+	  end if;
+    end if;
+  end while;
+   
+ SET SQL_SAFE_UPDATES = 1; 
+ DROP TABLE IF EXISTS temp;
+
+END
+
+36、把money按从第一级到最后一级，树形列出来
+CREATE DEFINER=`root`@`localhost` PROCEDURE `createmoneytree`(out sessionid varchar(30))
+BEGIN
+  DECLARE done int default 0;
+  declare tmpmoney_id, level0 int;
+  declare rs cursor for select money_id, level from moneyTemp order by id desc limit 1;
+  declare continue handler for sqlstate '02000' set done=1;
+  SET SQL_SAFE_UPDATES = 0 ;
+#  set @rootid = rootid;
+  DROP TEMPORARY TABLE IF EXISTS moneyTemp;
+  CREATE TEMPORARY TABLE moneyTemp 
+      (
+        id INT NOT NULL AUTO_INCREMENT,
+        money_id int,
+        level int, 
+        PRIMARY KEY (id)
+      );
+  
+  set @tmpsessionid = date_format(now(),'%Y%m%d%H%i%S%f');
+#  //used for return value
+  set sessionid = @tmpsessionid;   
+  
+  Set @Level=0 ;
+#  INSERT into lr_moneynode (money_id, amount, comment, cashtype_id, user_id, purpose_id, parentmoney_id, level, cort, sessionid) 
+#      SELECT id,amount, comment, cashtype_id, user_id, purpose_id, parentmoney_id, @Level,ID, @tmpsessionid 
+#      FROM lr_money 
+#      WHERE parentmoney_id is NULL;
+  insert into moneyTemp (money_id, level) 
+      select id, @level
+	  from lr_money 
+      where parentmoney_id is NULL;
+  
+  repeat
+    open rs;
+	fetch rs into tmpmoney_id, level0;
+	if not done then
 
 
+		  SET @Level=Level0+1 ;
+
+          INSERT into lr_moneynode (money_id, amount, comment, cashtype_id, user_id, purpose_id, parentmoney_id, level, cort, sessionid) 
+			   SELECT ID, amount, comment, cashtype_id, user_id, purpose_id, parentmoney_id, @Level, ID, @tmpsessionid 
+			   FROM lr_money
+			   WHERE id=tmpmoney_id;
+		  insert into moneyTemp (money_id, level)
+              select id, @level 
+			  from lr_money 
+			  where parentmoney_id=tmpmoney_id;
+		  delete from moneyTemp
+			  where money_id=tmpmoney_id;
+	end if;
+    close rs;
+  until done end repeat;
+
+ update lr_moneynode
+     set comment=concat(repeat('...', level), level)
+     where sessionid=@tmpsessionid;
+  
+   
+ SET SQL_SAFE_UPDATES = 1; 
+ select * from lr_moneynode where sessionid=@tmpsessionid;
+
+END
+
+37、指定一个id，把该id的下级money列出来，按树形显示
+CREATE DEFINER=`root`@`localhost` PROCEDURE `listchild`(in rootid int, out sessionid char(20))
+BEGIN
+  DECLARE done int default 0;
+  declare tmpmoney_id, level0 int;
+  declare rs cursor for select money_id, level from moneyTemp order by id desc limit 1;
+  declare continue handler for sqlstate '02000' set done=1;
+  SET SQL_SAFE_UPDATES = 0 ;
+  set @rootid = rootid;
+  DROP TEMPORARY TABLE IF EXISTS moneyTemp;
+  CREATE TEMPORARY TABLE moneyTemp 
+      (
+        id INT NOT NULL AUTO_INCREMENT,
+        money_id int,
+        level int, 
+        PRIMARY KEY (id)
+      );
+  
+/*  DROP TEMPORARY TABLE IF EXISTS moneyTemp;
+  CREATE TEMPORARY TABLE moneyTemp AS select * from lr_money where id=v;
+  select add1(v);
+  alter table moneyTemp add column t int;
+  update moneyTemp set t = 1;
+  select * from moneyTemp;
+ 
+*/
+  
+  set @tmpsessionid = date_format(now(),'%Y%m%d%H%i%S%f');
+  set sessionid = @tmpsessionid;
+  
+  Set @Level=0 ;
+  INSERT into lr_moneynode (money_id, amount, comment, cashtype_id, user_id, purpose_id, parentmoney_id, level, cort, sessionid) 
+      SELECT id,amount, comment, cashtype_id, user_id, purpose_id, parentmoney_id, @Level,ID, @tmpsessionid 
+      FROM lr_money 
+      WHERE ID=@rootid;
+  insert into moneyTemp (money_id, level) 
+      select id, @level
+	  from lr_money 
+      where parentmoney_id=@rootid;
+  
+  repeat
+    open rs;
+	fetch rs into tmpmoney_id, level0;
+	if not done then
+
+
+		  SET @Level=Level0+1 ;
+
+          INSERT into lr_moneynode (money_id, amount, comment, cashtype_id, user_id, purpose_id, parentmoney_id, level, cort, sessionid) 
+			   SELECT ID, amount, comment, cashtype_id, user_id, purpose_id, parentmoney_id, @Level, ID, @tmpsessionid 
+			   FROM lr_money
+			   WHERE id=tmpmoney_id;
+		  insert into moneyTemp (money_id, level)
+              select id, @level 
+			  from lr_money 
+			  where parentmoney_id=tmpmoney_id;
+		  delete from moneyTemp
+			  where money_id=tmpmoney_id;
+	end if;
+    close rs;
+  until done end repeat;
+
+ update lr_moneynode
+     set comment=concat(repeat('...', level), level)
+     where sessionid=@tmpsessionid;
+  
+   
+ SET SQL_SAFE_UPDATES = 1; 
+
+END
+
+
+
+
+下面都是临时可能用得到的一些命令，怕忘记了，暂时放这里：
 
 
 
@@ -199,3 +386,63 @@ django-admin.py startproject learning_log .
 python manage.py startapp learning_logs
 
 python manage.py runserver
+
+
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `se`(in rootid int, out sessionid varchar(30))
+BEGIN
+#  DECLARE @Level int ;
+  SET SQL_SAFE_UPDATES = 0 ;
+  set @rootid = rootid;
+
+/*  DROP TEMPORARY TABLE IF EXISTS moneyTemp;
+  CREATE TEMPORARY TABLE moneyTemp AS select * from lr_money where id=v;
+  select add1(v);
+  alter table moneyTemp add column t int;
+  update moneyTemp set t = 1;
+  select * from moneyTemp;
+  
+  
+  drop PROCEDURE IF EXISTS  showTreeNodes_yongyupost2000//
+
+CREATE PROCEDURE showTreeNodes_yongyupost2000 (IN rootid INT)
+ BEGIN
+ 
+*/
+  
+  set @tmpsessionid = date_format(now(),'%Y%m%d%H%i%S%f');
+  set sessionid = @tmpsessionid;
+
+  set @sql = concat('drop TABLE IF EXISTS ', @temptablename);
+  prepare stml from @sql;
+  execute stml;
+  set @sql = concat('CREATE TABLE ', @temptablename, ' (id int, nLevel int, sCort varchar(8000));');
+  prepare stml from @sql;
+  execute stml;
+  
+  Set @Level=0 ;
+  set @sql = concat('INSERT into ', @temptablename, ' SELECT id,@Level,ID FROM lr_money WHERE ID=@rootid;');
+  prepare stml from @sql;
+  execute stml;
+
+  WHILE ROW_COUNT()>0 DO
+   SET @Level=@Level+1 ;
+
+   set @sql = concat('INSERT into ', @temptablename, ' SELECT A.ID,@Level,concat(B.sCort,A.ID) FROM lr_money A,', @temptablename, ' B  WHERE A.parentmoney_id=B.ID AND B.nLevel=@Level-1;');
+   prepare stml from @sql;
+   execute stml;
+    
+  END WHILE;
+   
+ SET SQL_SAFE_UPDATES = 1; 
+ set @sql = concat('select * from ', @temptablename);
+ prepare stml from @sql;
+ execute stml;
+
+END
+
+Django中使用Bootstrap展示树形结构(这一篇还没有仔细看过，应该有用）
+http://www.mamicode.com/info-detail-1255874.html
+这一个是把parentmoney在选择的时候，按层次缩进，看得更清楚一些：
+http://www.codeweblog.com/%E5%A6%82%E4%BD%95%E4%BD%BFforeignkey%E5%AD%97%E6%AE%B5%E6%98%BE%E7%A4%BA%E6%A0%91%E7%8A%B6%E7%BB%93%E6%9E%84/
+

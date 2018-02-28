@@ -24,7 +24,6 @@ class Purpose(models.Model):
         return self.purpose
             
 class Money(models.Model):
-#    id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     amount = models.DecimalField(max_digits=20, decimal_places=4)
     cashtype = models.ForeignKey(Cashtype, on_delete=models.DO_NOTHING, default=1)
@@ -32,17 +31,28 @@ class Money(models.Model):
     beneficiarydesignated = models.BooleanField(default=False)
     donatordesignated = models.BooleanField(default=False)
     purpose = models.ForeignKey(Purpose, on_delete=models.DO_NOTHING, blank=True, null=True, default=1)  #define the purpose of money: donation, refund, request, etc.
-#    moneyinout = models.ForeignKey(Moneyinout, on_delete=models.DO_NOTHING)
-#    moneyinout = models.ForeignKey(Moneyinout, on_delete=models.DO_NOTHING, default=1)
 #    parentmoney = models.ForeignKey('self', limit_choices_to={'amount__gt': Money__amount}, blank=True, null=True, on_delete=models.DO_NOTHING)
     parentmoney = models.ForeignKey('self', blank=True, null=True, on_delete=models.DO_NOTHING)
     comment = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
         return u'%+15s %+20s %+10s' % (self.amount, self.user, self.cashtype)
-        
-    def __setitem__(self, k, v):
-        self.k = v
+
+class Moneynode(models.Model):
+    money = models.ForeignKey(Money, blank=True, null=True, on_delete=models.CASCADE, related_name='current_money')
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    amount = models.DecimalField(max_digits=20, decimal_places=4)
+    cashtype = models.ForeignKey(Cashtype, on_delete=models.DO_NOTHING, default=1)
+    purpose = models.ForeignKey(Purpose, on_delete=models.DO_NOTHING, blank=True, null=True, default=1)
+    parentmoney = models.ForeignKey(Money, blank=True, null=True, on_delete=models.CASCADE, related_name='parent_money')
+    comment = models.CharField(max_length=50, blank=True)
+    sessionid = models.CharField(max_length=50, blank=True)
+    level = models.IntegerField(default=0)
+    cort = models.CharField(max_length=200, blank=True)
+
+    def __str__(self):
+#        return u'%+30s %+15s %+20s %+10s' % (self.comment, self.amount, self.user, self.cashtype)
+        return u'%+15s %+20s %+10s' % (self.amount, self.user, self.cashtype)
 
 class Inheritor(models.Model):
     first_name = models.CharField(max_length=30, blank=True)

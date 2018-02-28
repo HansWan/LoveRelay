@@ -2,8 +2,9 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.db import connection
 
-from .models import Money, Cashtype
+from .models import Money, Cashtype, Moneynode
 from django.contrib.auth.models import User
 
 from django.forms import inlineformset_factory
@@ -16,9 +17,11 @@ def index(request):
 
 @login_required
 def money(request):
-    moneys = Money.objects.filter(user=request.user).order_by('-amount')
+    moneys = Money.objects.filter(user=request.user, parentmoney=None).order_by('-amount')
     for money in moneys:
         money.candelete = not money.money_set.count()
+        money.haschild = money.money_set.count()
+        money.hasparent = money.parentmoney
         money.canrefund = (money.purpose.id == 4)
     context = {'moneys': moneys}
     return render(request, 'lr/moneys.html', context)
@@ -97,71 +100,80 @@ def moneytrack(request, money_id):
     if not moneys:
         context = {'msg': 'The # ' + str(money_id) + ' does not exist, please try again.'}
         return render(request, 'lr/showmsg.html', context)
-    for money in moneys:
-        money.seq = 1
-
-    import time
-    f0 = open("c://temp//1.txt", "a+")
-    f0.write(time.asctime(time.localtime(time.time()))+'\n')
-    ini = 'moneys.count(), outer program before'
-    f0.write(ini+'_: '+str(id(moneys))+':     '+str(moneys.count())+'\n')
-    f0.write(time.asctime(time.localtime(time.time()))+'\n')
-    f0.close()
-
-    allmoneys = findallmoney(money_id, moneys)
-
-    import time
-    f0 = open("c://temp//1.txt", "a+")
-    f0.write(time.asctime(time.localtime(time.time()))+'\n')
-    ini = 'moneys.count(), outer program after'
-    f0.write(ini+'_: '+str(id(allmoneys))+':     '+str(allmoneys.count())+'\n')
-    f0.write(time.asctime(time.localtime(time.time()))+'\n')
-    f0.close()
-
-    for money in allmoneys:
-        money.candelete = not money.money_set.count()
-        money.canrefund = (money.purpose.id == 4)
-    context = {'moneys': allmoneys}
-    return render(request, 'lr/moneys.html', context)
     
-def findallmoney(money_id, moneys):
+    cursor = connection.cursor()
+    cursor.execute("call listchild(%s, @p1)", (str(money_id),))
+    cur2 = connection.cursor()
+    cur2.execute("select @p1")
+    sessionid0 = cur2.fetchone()
+    moneys = Moneynode.objects.filter(sessionid=str(sessionid0[0], encoding='utf8'))
+    for money in moneys:
+        m = Money.objects.filter(id=money.money_id)[0]
+        money.candelete = not m.money_set.count()
+        money.haschild = m.money_set.count()
+        money.hasparent = m.parentmoney
+        money.canrefund = (money.purpose.id == 4)
+    context = {'moneys': moneys}
+    return render(request, 'lr/moneytrack.html', context)
+    
+def findchildmoney(money_id, seq):
     childmoneyset = Money.objects.filter(parentmoney=money_id)
+    if not childmoneyset:
+        return childmoneyset
+
+    import time
+    f0 = open("c://temp//1.txt", "a+")
+    f0.write(time.asctime(time.localtime(time.time()))+'\n')
+    ini = 'childmoneyset count'
+    f0.write(ini+'_: '+str(childmoneyset.count())+'\n')
+    ini = 'childmoneyset id'
+    f0.write(ini+'_: '+str(id(childmoneyset))+'\n')
+    f0.write(time.asctime(time.localtime(time.time()))+'\n')
+    f0.close()
+
+
     for cm in childmoneyset:
         cmset = Money.objects.filter(id=cm.id)
+        seq += 1
         for money in cmset:
-            money.seq = moneys.count() + 1
+            money.seq = seq
 
-        for money in moneys:
-            import time
-            f0 = open("c://temp//1.txt", "a+")
-            f0.write(time.asctime(time.localtime(time.time()))+'\n')
-            ini = 'before combile moneys.count()'
-            f0.write(str(cm.id)+'\n')
-            f0.write(ini+'_: '+str(id(moneys))+':     '+str(moneys.count())+'\n')
-            f0.write(time.asctime(time.localtime(time.time()))+'\n')
-            f0.close()
-    
-        moneys = moneys.union(cmset)
 
         import time
         f0 = open("c://temp//1.txt", "a+")
         f0.write(time.asctime(time.localtime(time.time()))+'\n')
-        ini = 'after combile moneys.count()'
-        f0.write(ini+'_: '+str(id(moneys))+':     '+str(moneys.count())+'\n')
+        ini = 'before inner return seq'
+        f0.write('cm.id:  '+str(cm.id)+'\n')
+        f0.write(ini+'_: '+str(seq)+'\n')
         f0.write(time.asctime(time.localtime(time.time()))+'\n')
         f0.close()
+
+
+        yield cmset | findchildmoney(cm.id, seq)
+
+
     
-        findallmoney(cm.id, moneys)
+        # moneys = moneys.union(cmset)
 
-    import time
-    f0 = open("c://temp//1.txt", "a+")
-    f0.write(time.asctime(time.localtime(time.time()))+'\n')
-    ini = 'moneys.count(), before return'
-    f0.write(ini+'_: '+str(id(moneys))+':     '+str(moneys.count())+'\n')
-    f0.write(time.asctime(time.localtime(time.time()))+'\n')
-    f0.close()
+        # import time
+        # f0 = open("c://temp//1.txt", "a+")
+        # f0.write(time.asctime(time.localtime(time.time()))+'\n')
+        # ini = 'after combile moneys.count()'
+        # f0.write(ini+'_: '+str(id(moneys))+':     '+str(moneys.count())+'\n')
+        # f0.write(time.asctime(time.localtime(time.time()))+'\n')
+        # f0.close()
+    
+        # findallmoney(cm.id, moneys)
 
-    return moneys
+    # import time
+    # f0 = open("c://temp//1.txt", "a+")
+    # f0.write(time.asctime(time.localtime(time.time()))+'\n')
+    # ini = 'moneys.count(), before return'
+    # f0.write(ini+'_: '+str(id(moneys))+':     '+str(moneys.count())+'\n')
+    # f0.write(time.asctime(time.localtime(time.time()))+'\n')
+    # f0.close()
+
+    # return moneys
     
 def new_money(request):
     if request.method != 'POST':
@@ -185,7 +197,9 @@ def edit_money(request, money_id):
         if form.is_valid():
             if validate_money(request, form):
                 form.save()
-                return HttpResponseRedirect(reverse('lr:moneys'))
+#                return HttpResponseRedirect(reverse('lr:moneys'))
+                return HttpResponseRedirect(reverse('lr:moneytrack', kwargs={"money_id": money_id}))
+                
     context = {'money_id': money_id, 'form': form}
     return render(request, 'lr/edit_money.html', context)
 

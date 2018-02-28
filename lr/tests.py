@@ -1,10 +1,8 @@
-def re(x):
-    global y
-    print(x)
-    y=30
-    print(x)
+def f(i):
+    for x in i:
+        print(x)
+        return
 
-x=20
-y=1
-re(x)
-print(y)
+
+i = [1,2,3]
+f(i)
