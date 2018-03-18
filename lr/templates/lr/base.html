@@ -1,0 +1,65 @@
+{% load bootstrap3 %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        <title>Love Relay</title>
+        {% bootstrap_css %}
+        {% bootstrap_javascript %}
+    </head>
+
+    <body>
+    
+        <!-- Static navbar -->
+            <nav class="navbar navbar-default navbar-static-top">
+                <div class="container>
+
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        </button>
+                        <a class="navbar-brand" href="{% url 'lr:index' %}">Love Relay</a>
+                    </div>
+                    
+                    <div id="navbar" class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav navbar-left">
+                            <li><a href="{% url 'lr:donation' %}">Donation</a></li>
+                            <li><a href="{% url 'lr:request' %}">Request</a></li>
+                            <li><a href="{% url 'lr:loan' %}">Loan</a></li>
+                            <li><a href="{% url 'lr:moneys' %}">Refund</a></li>
+                            <li><a href="{% url 'lr:moneys' %}">AllType</a></li>
+                            <li><a href="{% url 'lr:search_money' %}">Search Money</a></li>
+                        </ul>
+                        
+                        <ul class="nav navbar-nav navbar-right">
+                            {% if user.is_authenticated %}
+                                <li><a>Hello, {{ user.username }}.</a></li>
+                                <li><a href="{% url 'users:logout' %}">log out</a></li>
+                            {% else %}
+                                <li><a href="{% url 'users:login' %}">log in</a></li>
+                                <li><a href="{% url 'users:register' %}">register</a></li>
+                            {% endif %}
+                        </ul>
+                    </div><!--/.nav-collpase -->
+                    
+                </div>
+            </nav>
+            
+            <div class="container">
+            
+                {% load static %}
+<!--                <img src="{% static 'a.jpg' %}" alt="my image" width="1000" height="25"></img>     -->
+                <div class="page-header">
+                    {% block header %}{% endblock header %}
+                </div>
+                <div>
+                    {% block content %}{% endblock content %}
+                </div>
+                
+            </div><!-- /container -->
+    </body>
+</html>
+

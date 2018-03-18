@@ -1,0 +1,106 @@
+{% extends 'lr/base.html' %}
+{% load bootstrap3 %}
+
+{% block header %}
+{% load static %}
+
+
+    <h4>Donation/Request</h4>
+<!--    <a href="{% url 'lr:new_money' %}" style="display:block;text-align: right;">Add money</a>    -->
+    
+
+{% endblock header %}
+
+{% block content %}
+
+    <script>
+
+        window.addEventListener("load", function(){
+            var obj = document.getElementById("showpicbutton");
+            obj.addEventListener("click", function(){
+                showpic();
+                }, false);
+            obj = null;
+            }, false);
+          
+        function showpic(){
+            var money_id = document.getElementById("money_id").innerHTML.replace(/<.+?>/gim,'');
+            var imgsrc = "{% url 'lr:makebar' %}";
+            var para = document.createElement("img");
+            para.src = imgsrc;
+            para.width = 150;
+            para.height = 120;
+            var p0 = document.createElement("p");
+            p0.appendChild(para);
+            document.body.appendChild(p0);
+            p0.align="center";
+        };
+          
+    </script>    
+    
+    <table class="table">
+            <td width=50 align=right><b>ID</b></td>
+            <td width=150 align=right><b>Amount</b></td>
+            <td width=150 align=right><b>User</b></td>
+            <td width=150 align=right><b>Cashtype</b></td>
+            <td width=150 align=right><b>Purpose</b></td>
+            <td width=15 align=right><b>Edit</b></td>
+            <td width=15 align=right><b>Delete</b></td>
+            <td width=15 align=right><b>Child</b></td>
+            <td width=15 align=right><b>Parent</b></td>
+            <td width=15 align=right><b>Refund</b></td>
+            
+        
+        {% for money in moneys %}
+            <tr>
+                {% if forloop.first %}      
+                    <td width=50 align=right id="money_id"><h5>{{ money.id }}</h5></td>
+                {% else %}
+                    <td width=50 align=right><h5>{{ money.id }}</h5></td>
+                {% endif %}
+                <td width=150 align=right><h5>{{ money.amount }}</h5></td>
+                <td width=150 align=right><h5>{{ money.user }}</h5></td>
+                <td width=150 align=right><h5>{{ money.cashtype }}</h5></td>
+                {% ifequal money.purpose_id 4 %}
+                    <td width=150 align=right><h5 style="color:red ">{{ money.purpose }}</h5></td>
+                {% else %}
+                    <td width=150 align=right><h5>{{ money.purpose }}</h5></td>
+                {% endifequal %}
+                <td width=15 align=right><h5><a href="{% url 'lr:edit_money' money.id %}">edit</a></h5></td>
+                {% if money.candelete %}
+                    <td width=15 align=right><h5><a href="{% url 'lr:delete_money' money.id %}">delete</a></h5></td>
+                {% else %}
+                    <td width=15 align=right><h5><a href="" disabled='disabled' title='Parentmoney, not allowed to delete.'>------</a></h5></td>
+                {% endif %}
+
+                {% if money.haschild %}
+                    <td width=15 align=right><h5><a href="{% url 'lr:moneytrack' money.id %}">child</a></h5></td>
+                {% else %}
+                    <td width=15 align=right><h5><a href="" disabled='disabled' title='No child.'>------</a></h5></td>
+                {% endif %}
+
+
+                {% if money.hasparent %}
+                    <td width=15 align=right><h5><a href="{% url 'lr:moneytrack' money.parentmoney_id %}">parent</a></h5></td>
+                {% else %}
+                    <td width=15 align=right><h5><a href="{% url 'lr:moneys'%}" title='Show root records.'>root</a></h5></td>
+                {% endif %}
+
+                {% if money.canrefund %}
+                    <td width=15 align=right><h5><a href="{% url 'lr:refund' money.id %}">refund</a></h5></td>
+                {% else %}
+                    <td width=15 align=right><h5><a href="" disabled='disabled' title='Not necessary to refund.'>------</a></h5></td>
+                {% endif %}
+            </tr>
+        {% empty %}
+            <tr>
+                <td>No money has been added yet.</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    {% buttons %}
+        <button name='submit' id="showpicbutton">show picture</button>
+    {% endbuttons %}
+   
+{% endblock content %}

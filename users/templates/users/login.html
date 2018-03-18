@@ -1,0 +1,21 @@
+{% extends "lr/base.html" %}
+{% load bootstrap3 %}
+
+{% block header %}
+    <h4>Log in to your account</h4>
+{% endblock header %}
+
+{% block content %}
+
+    <form method="post" actioin="{% url 'users:login' %}" class="form">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    
+    {% buttons %}
+    <button name="submit" class="btn btn-primary">login</button>
+    {% endbuttons %}
+    
+    <input type="hidden" name="next" value="{% url 'lr:index' %}" />
+    </form>
+    
+{% endblock content %}

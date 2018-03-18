@@ -1,0 +1,44 @@
+{% extends 'lr/base.html' %}
+{% load bootstrap3 %}
+
+{% block header %}
+    <h2>Refund</h2>
+{% endblock header %}
+
+{% block content %}
+    <script>
+
+        window.addEventListener("load", function(){
+            var obj = document.getElementById("myform")["id_purpose"];
+            obj.addEventListener("change", function(){
+                set_parentmoney();
+                }, false);
+            obj.disabled = true;
+            
+            document.getElementById("myform")["id_user"].readonly = true
+            document.getElementById("myform")["id_parentmoney"].disabled = true;
+            document.getElementById("myform")["id_beneficiarydesignated"].disabled = true
+            
+            obj = null;
+            }, false);
+           
+        function set_parentmoney(){
+/*
+            window.alert('changed');
+            if (document.getElementById("myform")["id_moneyinout"].selectedIndex == 0){
+                document.getElementById("myform")["id_parentmoney"].selectedIndex = 0;
+            };
+*/
+        }
+        
+    </script>    
+
+    <form id="myform" action="{% url 'lr:refund' money_id %}" class='form' method='post'>
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        
+        {% buttons %}
+            <button name='submit'>refund</button>
+        {% endbuttons %}
+    </form>
+{% endblock content %}

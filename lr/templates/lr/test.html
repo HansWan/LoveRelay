@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>learning Ajax</title>
+
+
+</head>
+
+<body>
+<script>
+
+function search_money(){
+    var XHR = new XMLHttpRequest();
+    var v1=document.getElementById("moneyid").value;
+    url = '/edit_money/' + v1
+    XHR.open('GET', url, false);
+    XHR.send(null);
+    document.getElementById("p1").innerHTML=XHR.responseText;
+/*
+    alert(XHR.status);
+    alert('ok')
+
+//    sleep(1)
+//    document.getElementById("p1").innerHTML="XHR.responseText";
+    XHR.open('GET','/search_money/(?P<v1>\d+)/$', True);
+//    XHR.onreadystatechange=returnFun;
+    XHR.send(null);
+*/
+}
+
+/*
+function returnFun(){
+    if(XHR.readyState==1){
+        document.getElementById("moneyid").innerHTML='Loding...';
+    }else if(XHR.readyState==4){
+        if(XHR.status==200){
+            document.getElementById("moneyid")innerHTML=XHR.responseText;
+        }
+        XHR=null;
+    }
+}
+*/
+
+</script>
+
+<label for="moneyid">MoneyID</label>
+<input placeholder="input money id here" id="moneyid" name="moneyid" type="text">
+<button type="button" id="search" name="search" onclick="search_money()">search</button>
+<p id="p1">search_result</p>
+
+</body>
+
+</html>

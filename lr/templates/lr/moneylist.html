@@ -1,0 +1,24 @@
+{% extends 'lr/base.html' %}
+{% load bootstrap3 %}
+
+{% block header %}
+    <h2>Money</h2>
+    <a href="{% url 'lr:new_money' %}" style="display:block;text-align: right;">Add money</a>
+    
+{% endblock header %}
+
+{% block content %}
+
+<form method="post" action="">
+    <table>
+        {{ formset }}
+    </table>
+</form>
+
+
+
+{% endblock content %}
+
+
+
+

@@ -1,0 +1,69 @@
+{% extends 'lr/base.html' %}
+{% load bootstrap3 %}
+
+{% block header %}
+    <h4>Search</h4>
+{% endblock header %}
+
+{% block content %}
+
+<script>
+
+function search_money(){
+    var XHR = new XMLHttpRequest();
+    var v1=document.getElementById("moneyid").value;
+    url = '/search_money_result/' + v1
+    XHR.open('GET', url, false);
+    XHR.send(null);
+    document.getElementById("p1").innerHTML=XHR.responseText;
+/*
+    alert(XHR.status);
+    alert('ok')
+
+//    sleep(1)
+//    document.getElementById("p1").innerHTML="XHR.responseText";
+    XHR.open('GET','/search_money/(?P<v1>\d+)/$', True);
+//    XHR.onreadystatechange=returnFun;
+    XHR.send(null);
+*/
+}
+
+/*
+function returnFun(){
+    if(XHR.readyState==1){
+        document.getElementById("moneyid").innerHTML='Loding...';
+    }else if(XHR.readyState==4){
+        if(XHR.status==200){
+            document.getElementById("moneyid")innerHTML=XHR.responseText;
+        }
+        XHR=null;
+    }
+}
+*/
+
+</script>
+
+    <form action="{% url 'lr:moneys' %}" class='form' method='post'>
+        {% csrf_token %}
+
+        {% buttons %}
+            <button name='submit'>search money</button>
+        {% endbuttons %}
+
+        <div class="form-group"><label class="control-label" for="id_id">ID</label><input type="number" name="id" value={{ form.instance.id }} step="0.0001" class="form-control" placeholder="ID" title="" required id="id_id" /></div>
+
+        {% bootstrap_form form %}
+        
+        {% buttons %}
+            <button name='submit'>search money</button>
+        {% endbuttons %}
+    </form>
+<!--
+<label for="moneyid" >MoneyID:</label>
+<input placeholder="input money id here" id="moneyid" name="moneyid" type="text" class='input'>
+
+<button onclick="search_money()">search</button>
+
+<p id="p1" class='p'></p>
+-->
+{% endblock content %}

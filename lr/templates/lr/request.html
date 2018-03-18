@@ -1,0 +1,18 @@
+{% extends 'lr/base.html' %}
+{% load bootstrap3 %}
+
+{% block header %}
+    <h4>Initiate a request</h4>
+{% endblock header %}
+
+{% block content %}
+    
+    <form action="{% url 'lr:request' %}" class='form' method='post'>
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        
+        {% buttons %}
+            <button name='submit'>send request</button>
+        {% endbuttons %}
+    </form>
+{% endblock content %}
