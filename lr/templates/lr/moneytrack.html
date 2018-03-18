@@ -21,15 +21,14 @@
             }, false);
           
         function showpic(){
-            var money_id = document.getElementById("money_id").innerHTML.replace(/<.+?>/gim,'');
-            var imgsrc = "{% url 'lr:makegraph' 111111 222222 %}";
-            imgsrc = imgsrc.replace('111111', money_id);
-            imgsrc = imgsrc.replace('222222', parseInt(Math.random()*10000));
-            var para=document.createElement("img");
-            para.src = imgsrc;
-            para.width = 150;
-            para.height = 120;
-            document.body.appendChild(para);
+            var img = document.getElementById("trackimage");
+            var button = document.getElementById("showpicbutton");
+            if (img.style.display=='none'){
+                img.style.display='block';
+                button.innerHTML='hide picture';}
+            else {
+                img.style.display='none';
+                button.innerHTML='show picture';}
             };
           
     </script>    
@@ -101,6 +100,7 @@
 
     {% buttons %}
         <button name='submit' id="showpicbutton">show picture</button>
+        <img src="{% url 'lr:makegraph' money_id p_add %}" id="trackimage" style="display:none"></img>
     {% endbuttons %}
    
 {% endblock content %}

@@ -1,0 +1,36 @@
+{% extends 'lr/base.html' %}
+{% load bootstrap3 %}
+
+{% block content %}
+
+    <script>
+
+        window.addEventListener("load", function(){
+            var obj = document.getElementById("showpicbutton");
+            obj.addEventListener("click", function(){
+                showpic();
+                }, false);
+            obj = null;
+            }, false);
+          
+        function showpic(){
+            var money_id = document.getElementById("money_id").innerHTML.replace(/<.+?>/gim,'');
+            var imgsrc = "{% url 'lr:makebar' %}";
+            var para = document.createElement("img");
+            para.src = imgsrc;
+            para.width = 150;
+            para.height = 120;
+            var p0 = document.createElement("p");
+            p0.appendChild(para);
+            document.body.appendChild(p0);
+            p0.align="center";
+        };
+          
+    </script>    
+	{% load static %}
+	<img src="{% static picture_filename %}" alt="my image" height="200"></img>
+    {% buttons %}
+        <button name='submit' id="showpicbutton">show picture</button>
+    {% endbuttons %}
+   
+{% endblock content %}

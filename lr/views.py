@@ -13,6 +13,7 @@ matplotlib.use('Agg')    #without this line not possible to draw a picture in li
 import matplotlib.pyplot as plt
 from io import BytesIO
 import pygal
+import random
 
 from .models import Money, Cashtype, Moneynode
 from django.contrib.auth.models import User
@@ -123,7 +124,9 @@ def moneytrack(request, money_id):
         money.haschild = m.money_set.count()
         money.hasparent = m.parentmoney
         money.canrefund = (money.purpose.id == 4)
-    context = {'moneys': moneys}
+    p_add = random.randint(0, 9999)
+    context = {'moneys': moneys, 'money_id': money_id, 'p_add': p_add}
+#    context = {'moneys': moneys}
     return render(request, 'lr/moneytrack.html', context)
     
 def query(request, money_id):
@@ -356,8 +359,7 @@ def track(request, money_id, add):
     return render(request, 'lr/moneytrack.html', context)
             
 def test(request):
-#    image_data = open("lr/a.jpg", "rb").read()
-#    return HttpResponse(image_data, mimetype="image/jpg")   
+    import tempfile
     #x = [3,5,2,9,6]
     #hist = pygal.Bar(width=200, height=150)
     #hist.add('n', x)
@@ -366,14 +368,31 @@ def test(request):
     x = [0, 1, 2, 3, 4]
     y = [0, 1, 4, 9, 16]
     plt.scatter(x, y)
-    #canvas = plt.get_current_fig_manager().canvas
-    #buffer = BytesIO()
-    #canvas.print_png(buffer)
-    #picture_data = buffer.getvalue()
-    #buffer.close()
-    #plt.close('all')
+    canvas = plt.get_current_fig_manager().canvas
+    buffer = BytesIO()
+    canvas.print_png(buffer)
+    picture_data = buffer.getvalue()
+    buffer.close()
+    tf = tempfile.NamedTemporaryFile()
+##################################################################
+    import time
+    f0 = open("/tmp/1.txt", "a+")
+    f0.write(time.asctime(time.localtime(time.time()))+'\n')
+    ini = 'tfname'
+    f0.write(ini+': '+tf.name+'\n')
+    f0.write(time.asctime(time.localtime(time.time()))+'\n')
+    f0.close()
+##################################################################
+    tf.close()
+    plt.savefig(tf.name)
+    
+#    plt.savefig('0.png')
+    plt.close('all')
 #    return HttpResponse(picture_data, content_type="Image/svg+xml")
-    return HttpResponse("test done")
+#    return HttpResponse("test done")
+#    context = {'picture_filename': tf.name}
+    context = {'picture_filename': tf.name+'.png'}
+    return render(request, 'lr/testpicsrc.html', context)
 
 def showobj(obj):
     f = open("c://temp//1.txt", "a+")

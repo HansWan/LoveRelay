@@ -52,3 +52,40 @@ function returnFun(){
 </body>
 
 </html>
+
+
+        function showpic(){
+            var money_id = document.getElementById("money_id").innerHTML.replace(/<.+?>/gim,'');
+            var imgsrc = "{% url 'lr:makegraph' 111111 222222 %}";
+            imgsrc = imgsrc.replace('111111', money_id);
+            imgsrc = imgsrc.replace('222222', parseInt(Math.random()*10000));
+            var para=document.createElement("img");
+            para.src = imgsrc;
+            para.width = 150;
+            para.height = 120;
+            document.body.appendChild(para);
+            };
+
+
+            var money_id = parseInt(document.getElementById("money_id").innerHTML.replace(/<.+?>/gim,''));
+            var at_id = parseInt(Math.random()*10000)；
+            var imgsrc = "{% url 'lr:makegraph' m1 m2 %}";
+            alert(imgsrc);
+            var para=document.createElement("img");
+            para.src = imgsrc;
+            para.width = 150;
+            para.height = 120;
+            document.body.appendChild(para);
+
+
+        function showpic(){
+            var img = document.getElementById("trackimage");
+            if (img.style.display=='none'){
+                img.style.display='block';
+                this.innerHtml='hide picture';};
+            else {
+                img.style.display=='none';
+                this.innerHtml='show picture';};
+            alert(img);
+            };
+
