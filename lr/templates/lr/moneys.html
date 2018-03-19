@@ -24,17 +24,15 @@
             }, false);
           
         function showpic(){
-            var money_id = document.getElementById("money_id").innerHTML.replace(/<.+?>/gim,'');
-            var imgsrc = "{% url 'lr:makebar' %}";
-            var para = document.createElement("img");
-            para.src = imgsrc;
-            para.width = 150;
-            para.height = 120;
-            var p0 = document.createElement("p");
-            p0.appendChild(para);
-            document.body.appendChild(p0);
-            p0.align="center";
-        };
+            var img = document.getElementById("trackimage");
+            var button = document.getElementById("showpicbutton");
+            if (img.style.display=='none'){
+                img.style.display='block';
+                button.innerHTML='hide picture';}
+            else {
+                img.style.display='none';
+                button.innerHTML='show picture';}
+            };
           
     </script>    
     
@@ -100,7 +98,8 @@
     </table>
 
     {% buttons %}
-        <button name='submit' id="showpicbutton">show picture</button>
+        <img src="data:image/svg+xml;base64,{{ picture_data }}" id="trackimage" width=400 height=300></img>
+        <button name='submit' id="showpicbutton">hide picture</button>
     {% endbuttons %}
    
 {% endblock content %}

@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 from io import BytesIO
 import pygal
 import random
+import base64        #used to encode plt picture data to base64 and transfer them to template
 
 from .models import Money, Cashtype, Moneynode
 from django.contrib.auth.models import User
@@ -29,12 +30,17 @@ def index(request):
 @login_required
 def money(request):
     moneys = Money.objects.filter(user=request.user, parentmoney=None).order_by('-amount')
+    hist = pygal.Bar(width=200, height=150)
+    x = []
     for money in moneys:
         money.candelete = not money.money_set.count()
         money.haschild = money.money_set.count()
         money.hasparent = money.parentmoney
         money.canrefund = (money.purpose.id == 4)
-    context = {'moneys': moneys}
+        x.append(money.amount)
+    hist.add('n', x)
+    picture_data = base64.b64encode(hist.render()).decode(encoding='utf-8')
+    context = {'moneys': moneys, 'picture_data': picture_data}
     return render(request, 'lr/moneys.html', context)
 
 @login_required
@@ -111,22 +117,30 @@ def moneytrack(request, money_id):
     if not moneys:
         context = {'msg': 'The # ' + str(money_id) + ' does not exist, please try again.'}
         return render(request, 'lr/showmsg.html', context)
-    
+    #get child records
     cursor = connection.cursor()
     cursor.execute("call listchild(%s, @p1)", (str(money_id),))
     cur2 = connection.cursor()
     cur2.execute("select @p1")
     sessionid0 = cur2.fetchone()
     moneys = Moneynode.objects.filter(sessionid=str(sessionid0[0], encoding='utf8'))
+    x_values = []
     for money in moneys:
         m = Money.objects.filter(id=money.money_id)[0]
         money.candelete = not m.money_set.count()
         money.haschild = m.money_set.count()
         money.hasparent = m.parentmoney
         money.canrefund = (money.purpose.id == 4)
-    p_add = random.randint(0, 9999)
-    context = {'moneys': moneys, 'money_id': money_id, 'p_add': p_add}
-#    context = {'moneys': moneys}
+        x_values.append(m.amount)
+    #create a picture
+    plt.plot(x_values)
+    canvas = plt.get_current_fig_manager().canvas
+    buffer = BytesIO()
+    canvas.print_png(buffer)
+    picture_data = base64.b64encode(buffer.getvalue()).decode(encoding='utf-8')
+    buffer.close()
+    plt.close('all')
+    context = {'moneys': moneys, 'picture_data': picture_data}
     return render(request, 'lr/moneytrack.html', context)
     
 def query(request, money_id):
@@ -359,40 +373,35 @@ def track(request, money_id, add):
     return render(request, 'lr/moneytrack.html', context)
             
 def test(request):
-    import tempfile
-    #x = [3,5,2,9,6]
-    #hist = pygal.Bar(width=200, height=150)
-    #hist.add('n', x)
-    #data = hist.render()
-    #return HttpResponse(data, content_type="Image/svg+xml")
+    import base64
     x = [0, 1, 2, 3, 4]
     y = [0, 1, 4, 9, 16]
     plt.scatter(x, y)
     canvas = plt.get_current_fig_manager().canvas
     buffer = BytesIO()
     canvas.print_png(buffer)
-    picture_data = buffer.getvalue()
+    picture_data = base64.b64encode(buffer.getvalue()).decode(encoding='utf-8')
     buffer.close()
-    tf = tempfile.NamedTemporaryFile()
+    picture_html = picture_data
+#    picture_html = "iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAAA3NCSVQICAjb4U/gAAAABlBMVEX///+ZmZmOUEqyAAAAAnRSTlMA/1uRIrUAAAAJcEhZcwAACusAAArrAYKLDVoAAAAWdEVYdENyZWF0aW9uIFRpbWUAMDkvMjAvMTIGkKG+AAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M26LyyjAAAAB1JREFUCJljONjA8LiBoZyBwY6BQQZMAtlAkYMNAF1fBs/zPvcnAAAAAElFTkSuQmCC"
+
+
 ##################################################################
     import time
     f0 = open("/tmp/1.txt", "a+")
     f0.write(time.asctime(time.localtime(time.time()))+'\n')
     ini = 'tfname'
-    f0.write(ini+': '+tf.name+'\n')
+    f0.write(ini+': '+str(picture_html)+'\n')
     f0.write(time.asctime(time.localtime(time.time()))+'\n')
     f0.close()
 ##################################################################
-    tf.close()
-    plt.savefig(tf.name)
-    
-#    plt.savefig('0.png')
+
+
+
     plt.close('all')
-#    return HttpResponse(picture_data, content_type="Image/svg+xml")
-#    return HttpResponse("test done")
 #    context = {'picture_filename': tf.name}
-    context = {'picture_filename': tf.name+'.png'}
-    return render(request, 'lr/testpicsrc.html', context)
+#    context = {'picture_html': picture_html}
+    return render(request, 'lr/testpicsrc.html', {'picture_html': picture_html})
 
 def showobj(obj):
     f = open("c://temp//1.txt", "a+")
@@ -419,5 +428,14 @@ def showobj(obj):
     # f0.write(ini+': '+str(type(response))+'\n')
     # f0.write(time.asctime(time.localtime(time.time()))+'\n')
     # f0.close()
+##################################################################
+##################################################################
+    import time
+    f0 = open("/tmp/1.txt", "a+")
+    f0.write(time.asctime(time.localtime(time.time()))+'\n')
+    ini = 'tfname'
+    f0.write(ini+': '+tf.name+'\n')
+    f0.write(time.asctime(time.localtime(time.time()))+'\n')
+    f0.close()
 ##################################################################
 

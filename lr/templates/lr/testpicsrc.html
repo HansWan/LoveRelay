@@ -28,7 +28,7 @@
           
     </script>    
 	{% load static %}
-	<img src="{% static picture_filename %}" alt="my image" height="200"></img>
+	<img src="data:image/png;base64,{{ picture_html }}" alt="my image" height="200"></img>
     {% buttons %}
         <button name='submit' id="showpicbutton">show picture</button>
     {% endbuttons %}

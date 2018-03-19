@@ -99,8 +99,8 @@
     </table>
 
     {% buttons %}
+        <img src="data:image/png;base64,{{ picture_data }}" id="trackimage" style="display:none" width=400 height=300></img>
         <button name='submit' id="showpicbutton">show picture</button>
-        <img src="{% url 'lr:makegraph' money_id p_add %}" id="trackimage" style="display:none"></img>
     {% endbuttons %}
    
 {% endblock content %}
