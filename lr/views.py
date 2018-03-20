@@ -39,7 +39,7 @@ def money(request):
         money.canrefund = (money.purpose.id == 4)
         x.append(money.amount)
     hist.add('n', x)
-    picture_data = base64.b64encode(hist.render()).decode(encoding='utf-8')
+    picture_data = base64.b64encode(hist.render_to_png()).decode(encoding='utf-8')
     context = {'moneys': moneys, 'picture_data': picture_data}
     return render(request, 'lr/moneys.html', context)
 
