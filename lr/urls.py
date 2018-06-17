@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^makebar/$', views.makebar, name='makebar'),
     url(r'^query/(?P<money_id>\d+)/$', views.query, name='query'),
     url(r'^getwords/$', views.getwords, name='getwords'),
+    url(r'^getword/(?P<word>\w+)/$', views.getword, name='getword'),
     url(r'^test/$', views.test, name='test'),
 #    url(r'^track/(?P<money_id>\d+)/(?P<add>\d+)/$', views.track, name='track'),
 #    url(r'^t.html', TemplateView.as_view(template_name='lr/t.html'), name='t'),

@@ -740,6 +740,9 @@ def get_detail_from_url(url):
             detail = detail + "\n" + node
     return detail
 
+def getword(request, word):
+    return HttpResponse(word, content_type="text/plain")    
+
 def getwords(request):
 
 #    import sys 
