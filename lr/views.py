@@ -751,7 +751,7 @@ def getwords(request):
 
 
     words = []
-    with open("/usr/local/itl/python/LoveRelay/static/wordslib03.txt", 'r', encoding='UTF-8') as wordsfile:  
+    with open("/usr/local/itl/python/LoveRelay/static/wordslib04.txt", 'r', encoding='UTF-8') as wordsfile:  
         for line in wordsfile:  
             (en, phonetic_symbol, cn) = line.strip().split('\t')  
             dict = {}
