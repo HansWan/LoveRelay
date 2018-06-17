@@ -2,7 +2,7 @@
 {% load bootstrap3 %}
 
 {% block header %}
-    <h4>Donation/Request</h4>
+    <h4><span class="label label-default">Donation/Request</span></h4>
 <!--    <a href="{% url 'lr:new_money' %}" style="display:block;text-align: right;">Add money</a>    -->
     
 
@@ -32,8 +32,8 @@
             };
           
     </script>    
-    
     <table class="table">
+		<div>
             <td width=150 align=left><b>Level</b></td>
             <td width=50 align=right><b>ID</b></td>
             <td width=150 align=right><b>Amount</b></td>
@@ -45,7 +45,7 @@
             <td width=15 align=right><b>Child</b></td>
             <td width=15 align=right><b>Parent</b></td>
             <td width=15 align=right><b>Refund</b></td>
-            
+       </div>    
         
         {% for money in moneys %}
             <tr>
@@ -73,7 +73,7 @@
                 {% endif %}
 
                 {% if money.haschild %}
-                    <td width=15 align=right><h5><a href="{% url 'lr:moneytrack' money.money_id %}">child</a></h5></td>
+                    <td width=15 align=right><h5><a href="{% url 'lr:moneytrack' money.money_id %}"><span class="badge" style="background-color:green">child</span></a></h5></td>
                 {% else %}
                     <td width=15 align=right><h5><a href="" disabled='disabled' title='No child.'>------</a></h5></td>
                 {% endif %}
@@ -99,8 +99,16 @@
     </table>
 
     {% buttons %}
-        <img src="data:image/png;base64,{{ picture_data }}" id="trackimage" style="display:none" width=400 height=300></img>
-        <button name='submit' id="showpicbutton">show picture</button>
+		<div class="media">
+			<a class="pull-left" href="#">
+				<img class="media-object img-responsive" src="data:image/png;base64,{{ picture_data }}" id="trackimage" alt="..."></img>
+			</a>
+			<div class="media-body">
+				<h3 class="media-heading">爱心传递路线图</h3>
+				<div>这些是一笔笔爱心传递的接力路线图，点列表中的 <small><span class="badge">child</span></small> 能看到后面的爱心传递情况。</div>
+			</div>
+			<button name='submit' id="showpicbutton" class="btn btn-info btn-sm">hide picture</button>
+		</div>
     {% endbuttons %}
    
 {% endblock content %}

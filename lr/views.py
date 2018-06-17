@@ -6,27 +6,263 @@ from django.core import serializers
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.db import connection
+import hashlib
+from lxml import etree
+from django.utils.encoding import smart_str
+#below line shoud be removed after test
+from django.views.decorators.csrf import csrf_exempt
+from wechat_sdk import WechatBasic
+from wechat_sdk.exceptions import ParseError
+from wechat_sdk.messages import TextMessage
 
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')    #without this line not possible to draw a picture in linux
 import matplotlib.pyplot as plt
+#plt.rcParams['font.sas-serif']=['simhei'] #用来正常显示中文标签
+#plt.rcParams['axes.unicode_minus']=False #用来正常显示负号
+
+from pylab import *  
+#mpl.rcParams['font.sans-serif'] = ['SimHei'] 
+
 from io import BytesIO
 import pygal
 import random
 import base64        #used to encode plt picture data to base64 and transfer them to template
 
-from .models import Money, Cashtype, Moneynode
+from .models import Money, Cashtype, Moneynode, Wechatreplymsg
 from django.contrib.auth.models import User
-
-from django.forms import inlineformset_factory
-
+#from django.forms import inlineformset_factory
 from .forms import MoneyForm, RequestForm, MoneydetailForm, MoneylistForm
 
 # Create your views here.
+@csrf_exempt
 def index(request):
-    return render(request, 'lr/index.html')
+    WECHAT_TOKEN = 'myweixinpassword'
+    AppID = 'wx3370960315272e32'
+    AppSecret = 'e6d6b879a09b13d5b19f8fda241adc6c'
+    MAX_REPLY_LENGTH = 630    #每次回复的文本最大长度
+    # 实例化 WechatBasic
+    wechat_instance = WechatBasic(
+        token=WECHAT_TOKEN,
+        appid=AppID,
+        appsecret=AppSecret
+    )   
+    
+    if request.method == 'GET':
+        try:
+            signature = request.GET.get('signature', None)
+        except:
+            pass
+        if signature == None:           #正常的L访问
+            return render(request, 'lr/index.html')
+        # 下面是微信公众号发来的验证本机的消息    
+        # 检验合法性
+        # 从 request 中提取基本信息 (signature, timestamp, nonce, xml)
+        signature = request.GET.get('signature')
+        timestamp = request.GET.get('timestamp')
+        nonce = request.GET.get('nonce')
+        if not wechat_instance.check_signature(signature=signature, timestamp=timestamp, nonce=nonce):
+            return HttpResponseBadRequest('Verify Failed')
+        return HttpResponse(request.GET.get('echostr', ''), content_type="text/plain")
+    # 解析本次请求的 XML 数据
+    try:
+        wechat_instance.parse_data(data=request.body)
+    except ParseError:
+        return HttpResponseBadRequest('Invalid XML Data')
+    # 获取解析好的微信请求信息
+    message = wechat_instance.get_message()
+    # 关注事件以及不匹配时的默认回复
+    if isinstance(message, TextMessage):
+        # 当前会话内容
+        content = message.content.strip()
+        if content == "news":
+            response = wechat_instance.response_news([
+                {
+                    'title': u'新闻标题',
+                    'description': u'新闻描述',
+                    'picurl': u"https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1187077172,2563639533&amp;fm=200&amp;gp=0.jpg",
+                    'url': u'http://www.baidu.com/',
+                }
+            ])
 
+        elif content.endswith("新闻"):
+            response = wechat_instance.response_text(content='去看看头条新闻吧，https://www.toutiao.com/ch/news_hot/')
+
+        elif content.endswith("图片"):
+            urls = []
+            rooturl = 'http://www.ivsky.com/tupian'
+            keywords = [content.strip('图片')]
+            #if no keywords input then give random keywords
+            if not content.strip('图片'):
+                keywords = [random.choice(['动物', '风光', '花卉', '海洋', '城市', '节日', '艺术'])]
+            urls = get_urls_by_keywords(rooturl, keywords)
+            if not urls:
+                reply_text = "没找到你要的图片，过一会儿再说吧？/::)"
+                response = wechat_instance.response_text(content=reply_text)
+            else:
+                #find contents from urls
+                contents = []
+                contents = get_contents_from_urls(urls)
+                if not contents:
+                    reply_text = "没找到你要的图片，过一会儿再说吧？/::)"
+                    response = wechat_instance.response_text(content=reply_text)
+                else:
+                    picture = random.choice(contents)
+                    response = wechat_instance.response_news([
+                        {
+                            'title': picture['title'],
+                            'picurl': picture['picurl'],
+                        }
+                    ])
+            
+        elif content == "笑话":
+            reply_text = ""        
+            rooturl = 'http://xiaohua.zol.com.cn/new/' + str(random.choice(range(2,5000))) + '.html'
+            urls = [rooturl]
+            #find contents from urls
+            contents = []
+            contents = get_contents_from_urls(urls)
+            if not contents:
+                reply_text = "没找到你要的笑话，过一会儿再说吧？/::)"
+                response = wechat_instance.response_text(content=reply_text)
+            else:
+                #从列表里面随机挑一个，把网址发给函数取正文
+                url = random.choice(contents)['url']
+                joke = get_detail_from_url(url)
+                if len(joke) > MAX_REPLY_LENGTH:
+                    reply_text = joke[0:MAX_REPLY_LENGTH] + "..." + "\n\n" + "【内容太长，没有完全显示，点这里看全文：" + url + "】"
+                else:
+                    reply_text = joke
+                if not reply_text:
+                    reply_text = "没找到你要的笑话，过一会儿再说吧？/::)"
+                response = wechat_instance.response_text(content=reply_text)
+
+        elif content == "天气":
+            import urllib.request
+            from bs4 import BeautifulSoup
+            from lxml import etree
+            url = 'http://www.weather.com.cn/weather/101200101.shtml'
+            headers = {'User-Agent':'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'}
+            req=urllib.request.Request(url=url,headers=headers)
+            resp = urllib.request.urlopen(req)
+            html = resp.read()
+            selector = etree.HTML(html)
+            day1_date = selector.xpath('//*[@id="7d"]/ul/li[1]/h1/text()')[0]
+            day1_weather = selector.xpath('//*[@id="7d"]/ul/li[1]/p[1]/text()')[0]
+            if selector.xpath('//*[@id="7d"]/ul/li[1]/p[2]/span/text()'):  
+                day1_temp_h = selector.xpath('//*[@id="7d"]/ul/li[1]/p[2]/span/text()')[0] + '/'
+            else:
+                day1_temp_h = ""
+            day1_temp_l = selector.xpath('//*[@id="7d"]/ul/li[1]/p[2]/i/text()')[0]
+            day1_wind = selector.xpath('//*[@id="7d"]/ul/li[1]/p[3]/i/text()')[0]
+            day1_text = day1_date + day1_weather + ", " + day1_temp_h + day1_temp_l + ", 风力" + day1_wind
+
+            day2_date = selector.xpath('//*[@id="7d"]/ul/li[2]/h1/text()')[0]
+            day2_weather = selector.xpath('//*[@id="7d"]/ul/li[2]/p[1]/text()')[0]
+            day2_temp_h = selector.xpath('//*[@id="7d"]/ul/li[2]/p[2]/span/text()')[0]
+            day2_temp_l = selector.xpath('//*[@id="7d"]/ul/li[2]/p[2]/i/text()')[0]
+            day2_wind = selector.xpath('//*[@id="7d"]/ul/li[2]/p[3]/i/text()')[0]
+            day2_text = day2_date + day2_weather + ", " + day2_temp_h + "/" + day2_temp_l + ", 风力" + day2_wind
+
+            day3_date = selector.xpath('//*[@id="7d"]/ul/li[3]/h1/text()')[0]
+            day3_weather = selector.xpath('//*[@id="7d"]/ul/li[3]/p[1]/text()')[0]
+            day3_temp_h = selector.xpath('//*[@id="7d"]/ul/li[3]/p[2]/span/text()')[0]
+            day3_temp_l = selector.xpath('//*[@id="7d"]/ul/li[3]/p[2]/i/text()')[0]
+            day3_wind = selector.xpath('//*[@id="7d"]/ul/li[3]/p[3]/i/text()')[0]
+            day3_text = day3_date + day3_weather + ", " + day3_temp_h + "/" + day3_temp_l + ", 风力" + day3_wind
+
+            day4_date = selector.xpath('//*[@id="7d"]/ul/li[4]/h1/text()')[0]
+            day4_weather = selector.xpath('//*[@id="7d"]/ul/li[4]/p[1]/text()')[0]
+            day4_temp_h = selector.xpath('//*[@id="7d"]/ul/li[4]/p[2]/span/text()')[0]
+            day4_temp_l = selector.xpath('//*[@id="7d"]/ul/li[4]/p[2]/i/text()')[0]
+            day4_wind = selector.xpath('//*[@id="7d"]/ul/li[4]/p[3]/i/text()')[0]
+            day4_text = day4_date + day4_weather + ", " + day4_temp_h + "/" + day4_temp_l + ", 风力" + day4_wind
+
+            reply_text = day1_text + '\n' + day2_text + '\n' + day3_text + '\n' + day4_text + '\n'
+            response = wechat_instance.response_text(content=reply_text)
+            
+        elif content == "故事":
+            reply_text = ""        
+            rooturl = 'https://www.jianshu.com'
+            keywords = [
+                '故事',
+            ]
+
+            urls = get_urls_by_keywords(rooturl, keywords)
+
+
+        ##################################################################
+
+#            if len(urls):
+#                reply_text = urls[1]
+#            else:
+#                reply_text = "没找到你要的故事，过一会儿再说吧？/::)"
+#            reply_text = len(urls)
+#            response = wechat_instance.response_text(content=reply_text)
+#            return HttpResponse(response, content_type="application/xml")
+
+        ##################################################################
+
+
+
+
+
+
+            if not urls:
+                reply_text = "没找到你要的故事，过一会儿再说吧？/::)"
+                response = wechat_instance.response_text(content=reply_text)
+            else:
+                #find contents from urls
+                contents = []
+                contents = get_contents_from_urls(urls)
+                if not contents:
+                    reply_text = "没找到你要的故事，过一会儿再说吧？/::)"
+                    response = wechat_instance.response_text(content=reply_text)
+                else:
+                    #从列表里面随机挑一个，把网址发给函数取正文
+                    url = random.choice(contents)['url']
+                    story = get_detail_from_url(url)
+                    if len(story) > MAX_REPLY_LENGTH:
+                        reply_text = story[0:MAX_REPLY_LENGTH] + "..." + "\n\n" + "【内容太长，没有完全显示，点这里看全文：" + url + "】"
+        #                reply_text = story[0:500] + "..." + "\n\n" + "<a href=" + "'" + rooturl+nodes[story_i] + "'" + ">点这里看完整的故事</a>"
+                    else:
+                        reply_text = story
+                    if not reply_text:
+                        reply_text = "没找到你要的故事，过一会儿再说吧？/::)"
+                    response = wechat_instance.response_text(content=reply_text)
+            
+        else:
+            reply_text = getwechatreplymsg(content)
+            if not reply_text:
+                reply_text = '功能还在完善中，稍候哈。。。/::)'
+            #if content == '功能':
+            #elif content.endswith('万俊'):
+                #reply_text = (
+                        #'目前支持的功能：\n1. 输入姓名查手机号，\n'
+                        #'2. 回复任意词语，查天气，陪聊天，讲故事，无所不能！\n'
+                        #'还有更多功能正在开发中哦 ^_^\n'
+                        #'\n【<a href="http://loverelay.51vip.biz">爱心接力站</a>】'
+                    #)
+            response = wechat_instance.response_text(content=reply_text)
+    elif isinstance(message, ImageMessage):
+        content = message.content
+    else:
+        response = wechat_instance.response_text(
+            content = (
+                '感谢关注！\n回复【功能】两个字查看支持的功能，还可以回复任意内容开始聊天。。。/::)'
+                ))
+
+    return HttpResponse(response, content_type="application/xml")
+
+def getwechatreplymsg(keyword):
+    #find a reply msg from mysql db and return
+    wechatreplymsgs = Wechatreplymsg.objects.filter(keyword=keyword)
+    msg = ""
+    for wechatreplymsg in wechatreplymsgs:
+        msg = msg + wechatreplymsg.keyword + ": \n" + wechatreplymsg.replymsg + "\n"
+    return msg
+    
 @login_required
 def money(request):
     moneys = Money.objects.filter(user=request.user, parentmoney=None).order_by('-amount')
@@ -38,7 +274,12 @@ def money(request):
         money.hasparent = money.parentmoney
         money.canrefund = (money.purpose.id == 4)
         x.append(money.amount)
-    hist.add('n', x)
+    hist.add("", x)
+#    hist.x_title = '捐赠ID'
+#    hist.y_title = '捐赠金额'
+    hist.x_title = 'ID'
+    hist.y_title = 'amount'
+#    picture_data = hist.render_data_uri()     #document里面是这样用，但是在IE里显示成黑块，firefox什么都不显示
     picture_data = base64.b64encode(hist.render_to_png()).decode(encoding='utf-8')
     context = {'moneys': moneys, 'picture_data': picture_data}
     return render(request, 'lr/moneys.html', context)
@@ -134,6 +375,10 @@ def moneytrack(request, money_id):
         x_values.append(m.amount)
     #create a picture
     plt.plot(x_values)
+#    plt.xlabel('捐赠ID')
+#    plt.ylabel('捐赠金额')
+    plt.xlabel('ID')
+    plt.ylabel('amount')
     canvas = plt.get_current_fig_manager().canvas
     buffer = BytesIO()
     canvas.print_png(buffer)
@@ -371,37 +616,236 @@ def track(request, money_id, add):
         money.canrefund = (money.purpose.id == 4)
     context = {'moneys': moneys}
     return render(request, 'lr/moneytrack.html', context)
-            
-def test(request):
-    import base64
-    x = [0, 1, 2, 3, 4]
-    y = [0, 1, 4, 9, 16]
-    plt.scatter(x, y)
-    canvas = plt.get_current_fig_manager().canvas
-    buffer = BytesIO()
-    canvas.print_png(buffer)
-    picture_data = base64.b64encode(buffer.getvalue()).decode(encoding='utf-8')
-    buffer.close()
-    picture_html = picture_data
-#    picture_html = "iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAAA3NCSVQICAjb4U/gAAAABlBMVEX///+ZmZmOUEqyAAAAAnRSTlMA/1uRIrUAAAAJcEhZcwAACusAAArrAYKLDVoAAAAWdEVYdENyZWF0aW9uIFRpbWUAMDkvMjAvMTIGkKG+AAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M26LyyjAAAAB1JREFUCJljONjA8LiBoZyBwY6BQQZMAtlAkYMNAF1fBs/zPvcnAAAAAElFTkSuQmCC"
 
+def get_urls_by_keywords(url, keywords):
+    import urllib.request
+    from bs4 import BeautifulSoup
+    from lxml import etree
+    headers = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0'}  
+    req = urllib.request.Request(url=url, headers=headers)  
+    resp = urllib.request.urlopen(req)
+    html = resp.read()
+    selector = etree.HTML(html)
+    urls = []
+    #图片天堂
+    if 'www.ivsky.com' in url:
+        rooturl = 'http://www.ivsky.com'
+        node_tpmenu = []
+        node_sline = []
+        for kw in keywords:
+            node_tpmenu = selector.xpath("//ul[@class='tpmenu']/descendant::a[contains(text(), $kw)]/@href", kw=kw)
+            node_sline = selector.xpath("//div[@class='sline']/descendant::a[contains(text(), $kw)]/@href", kw=kw)
+            for node in node_tpmenu:
+                if rooturl+node not in urls:
+                    urls.append(rooturl+node)
+            for node in node_sline:
+                if rooturl+node not in urls:
+                    urls.append(rooturl+node)
+    #jianshu story
+    elif 'www.jianshu.com' in url:
+        rooturl = 'https://www.jianshu.com'
+        #story
+        for kw in keywords:
+#            nodes = selector.xpath('//div[text()=$kw]/@href', kw=kw)
+            nodes = selector.xpath('//a[contains(string(), $kw)]/@href', kw=kw)
+        for node in nodes:
+            if rooturl+node not in urls:
+                urls.append(rooturl+node)
+    return urls
+
+def get_contents_from_urls(urls):
+    import urllib.request
+    from bs4 import BeautifulSoup
+    from lxml import etree
+    headers = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0'}  
+    contents = []
+    for url in urls:
+        #图片天堂
+        if 'www.ivsky.com' in url:
+            req = urllib.request.Request(url=url, headers=headers)  
+            resp = urllib.request.urlopen(req)
+            html = resp.read()
+            selector = etree.HTML(html)
+            nodes = selector.xpath("//div[@class='il_img']/descendant::img")
+            for i in range(0, len(nodes)):
+                print(i)
+                node_title = selector.xpath("//div[@class='il_img']/descendant::img/@alt")[i] + "【转自ivsky.com】"
+                node_link = selector.xpath("//div[@class='il_img']/descendant::img/@src")[i]
+                content = {}
+                content['title'] = node_title
+                content['picurl'] = node_link
+                contents.append(content)
+        #jianshu story
+        elif 'www.jianshu.com' in url:
+            rooturl = 'https://www.jianshu.com'
+            req = urllib.request.Request(url=url, headers=headers)  
+            resp = urllib.request.urlopen(req)
+            html = resp.read()
+            selector = etree.HTML(html)
+            nodes = selector.xpath("//a[@class='title']")
+            for i in range(0, len(nodes)):
+                node_title = selector.xpath("//a[@class='title']/text()")[i] + "【转自jianshu.com】"
+                node_link = selector.xpath("//a[@class='title']/@href")[i]
+                content = {}
+                content['title'] = node_title
+                content['url'] = rooturl + node_link
+                contents.append(content)
+        #joke
+        elif 'xiaohua.zol.com.cn' in url:
+            rooturl = 'http://xiaohua.zol.com.cn'
+            req = urllib.request.Request(url=url, headers=headers)  
+            resp = urllib.request.urlopen(req)
+            html = resp.read()
+            selector = etree.HTML(html)
+            nodes = selector.xpath("//span[@class='article-title']/a")
+            for i in range(0, len(nodes)):
+                node_title = selector.xpath("//span[@class='article-title']/a/text()")[i] + "【转自zol.com.cn】"
+                node_link = selector.xpath("//span[@class='article-title']/a/@href")[i]
+                content = {}
+                content['title'] = node_title
+                content['url'] = rooturl + node_link
+                contents.append(content)
+    return contents
+
+def get_detail_from_url(url):
+    import urllib.request
+    from bs4 import BeautifulSoup
+    from lxml import etree
+    headers = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0'}  
+    detail = ''
+#    for url in urls:
+    #jianshu story
+    if 'www.jianshu.com' in url:
+        req = urllib.request.Request(url=url, headers=headers)  
+        resp = urllib.request.urlopen(req)
+        html = resp.read()
+        selector = etree.HTML(html)
+        title = selector.xpath("//h1[@class='title']/text()")[0] + "【摘录自简书】"
+        xpath = "//p/text()"
+        nodes = selector.xpath(xpath)
+        detail = title
+        for node in nodes:
+            detail = detail + "\n" + node
+    elif 'xiaohua.zol.com.cn' in url:
+        req = urllib.request.Request(url=url, headers=headers)  
+        resp = urllib.request.urlopen(req)
+        html = resp.read()
+        selector = etree.HTML(html)
+        xpath = "//h1[@class='article-title']/text()"
+        title = selector.xpath(xpath)[0] + "【摘录自笑话大全】"
+        xpath = "//div[@class='article-text']/descendant-or-self::*/text()"
+        nodes = selector.xpath(xpath)
+        detail = title
+        for node in nodes:
+            detail = detail + "\n" + node
+    return detail
+
+def getwords(request):
+
+#    import sys 
+#    reload(sys) 
+#    sys.setdefaultencoding('utf8')    
+
+#测试open txt files
+        ##################################################################
+
+
+    words = []
+    with open("/usr/local/itl/python/LoveRelay/static/wordslib03.txt", 'r', encoding='UTF-8') as wordsfile:  
+        for line in wordsfile:  
+            (en, phonetic_symbol, cn) = line.strip().split('\t')  
+            dict = {}
+            dict['English'] = en
+            dict['Phonetic_symbol'] = phonetic_symbol
+            dict['Chinese'] = cn
+            words.append(dict) 
+#    f0.close()
+        ##################################################################
+
+
+
+
+
+#            reply_text = '天气!'
+    
+    #words = [
+      #{
+        #'English': 'a',
+        #'Chinese': '一个'
+      #},
+      #{
+        #'English': 'abandon',
+        #'Chinese': '放弃'
+      #},
+      #{
+        #'English': 'arrive',
+        #'Chinese': '到达到达'
+      #},
+      #{
+        #'English': 'away',
+        #'Chinese': '离开离开'
+      #},
+      #{
+        #'English': 'along',
+        #'Chinese': '沿着沿着'
+      #},
+      #{
+        #'English': 'ago',
+        #'Chinese': '以前以前'
+      #},
+      #{
+        #'English': 'almost',
+        #'Chinese': '几乎几乎'
+      #},
+      #{
+        #'English': 'ask',
+        #'Chinese': '问'
+      #},
+      #{
+        #'English': 'after',
+        #'Chinese': '以后以后以后'
+      #},
+      #{
+        #'English': 'any',
+        #'Chinese': '任意任意任意'
+      #},
+      #{
+        #'English': 'annoy',
+        #'Chinese': '烦恼烦恼烦恼烦恼'
+      #}
+    #]
+    data = words
+#    data = [1,2]
+#    data = serializers.serialize("json", wordlist)
+#    return render(request, 'lr/moneytrack.html', context)
+#    return HttpResponse(moneys)
+#    return HttpResponse(json.dumps(data))
+    return HttpResponse(json.dumps(data), content_type="application/json")
+                
+def test(request):
+    from selenium import webdriver
+    url='http://www.weather.com.cn/weather/101200101.shtml'
+#            browser = webdriver.Chrome()
+#    browser = webdriver.Firefox()
+    browser = webdriver.Firefox(log_path="/tmp/1.txt")
+    #browser.get(url)
+    #today_date = browser.find_element_by_xpath('//*[@id="7d"]/ul/li[1]/h1').text
+    #today_weather = browser.find_element_by_xpath('//*[@id="7d"]/ul/li[1]/p[1]').text
+    #today_temp = browser.find_element_by_xpath('//*[@id="7d"]/ul/li[1]/p[2]/i').text
+    #today_wind = browser.find_element_by_xpath('//*[@id="7d"]/ul/li[1]/p[3]/i').text
+    #reply_text = today_date + today_weather + ", " + today_temp + ", 风力" + today_wind
+    #response = wechat_instance.response_text("content=reply_text")
 
 ##################################################################
     import time
     f0 = open("/tmp/1.txt", "a+")
     f0.write(time.asctime(time.localtime(time.time()))+'\n')
     ini = 'tfname'
-    f0.write(ini+': '+str(picture_html)+'\n')
+#    f0.write(ini+': '+str(picture_html)+'\n')
     f0.write(time.asctime(time.localtime(time.time()))+'\n')
     f0.close()
 ##################################################################
-
-
-
-    plt.close('all')
-#    context = {'picture_filename': tf.name}
-#    context = {'picture_html': picture_html}
-    return render(request, 'lr/testpicsrc.html', {'picture_html': picture_html})
+    return HttpResponse('test ok')
 
 def showobj(obj):
     f = open("c://temp//1.txt", "a+")

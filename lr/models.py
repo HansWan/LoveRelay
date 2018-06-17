@@ -109,4 +109,11 @@ class Userbankinfo(models.Model):
     def __str__(self):
         return u'%s %s' % (self.user, self.bank)
 
+class Wechatreplymsg(models.Model):
+    keyword = models.CharField(max_length=50, blank=True)
+    replymsg = models.CharField(max_length=2000, blank=True)
+    
+    def __str__(self):
+        return u'%s %s' % (self.keyword, self.replymsg)
+
 

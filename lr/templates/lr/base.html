@@ -5,6 +5,8 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        
+<!--        <meta http-equiv="Refresh" content="5;url='{% url 'lr:index' %}'">  -->
         <meta name="viewport" content="width=device-width, initial-scale=1">
         
         <title>Love Relay</title>
@@ -13,40 +15,97 @@
     </head>
 
     <body>
-    
+        
+    <style>
+        .glyphicon-heart{
+            color: red;
+            font-size:12px;
+        }
+        .glyphicon-envelope{
+            color: red;
+            font-size:12px;
+        }
+        .glyphicon-usd{
+            color: red;
+            font-size:12px;
+        }
+        .glyphicon-repeat{
+            color: red;
+            font-size:12px;
+        }
+        .glyphicon-list{
+            color: red;
+            font-size:12px;
+        }
+        .glyphicon-search{
+            color: red;
+            font-size:12px;
+        }
+        .glyphicon-log-out{
+            color: red;
+            font-size:12px;
+        }
+        .glyphicon-log-in{
+            color: red;
+            font-size:12px;
+        }
+        .glyphicon-user{
+            color: red;
+            font-size:12px;
+        }
+        .div-inline{
+            display:inline;
+            top:6px;
+        }
+    </style>
         <!-- Static navbar -->
-            <nav class="navbar navbar-default navbar-static-top">
-                <div class="container>
-
-                    <div class="navbar-header">
-                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                        </button>
-                        <a class="navbar-brand" href="{% url 'lr:index' %}">Love Relay</a>
-                    </div>
-                    
-                    <div id="navbar" class="navbar-collapse collapse">
-                        <ul class="nav navbar-nav navbar-left">
-                            <li><a href="{% url 'lr:donation' %}">Donation</a></li>
-                            <li><a href="{% url 'lr:request' %}">Request</a></li>
-                            <li><a href="{% url 'lr:loan' %}">Loan</a></li>
-                            <li><a href="{% url 'lr:moneys' %}">Refund</a></li>
-                            <li><a href="{% url 'lr:moneys' %}">AllType</a></li>
-                            <li><a href="{% url 'lr:search_money' %}">Search Money</a></li>
-                        </ul>
-                        
-                        <ul class="nav navbar-nav navbar-right">
-                            {% if user.is_authenticated %}
-                                <li><a>Hello, {{ user.username }}.</a></li>
-                                <li><a href="{% url 'users:logout' %}">log out</a></li>
-                            {% else %}
-                                <li><a href="{% url 'users:login' %}">log in</a></li>
-                                <li><a href="{% url 'users:register' %}">register</a></li>
-                            {% endif %}
-                        </ul>
-                    </div><!--/.nav-collpase -->
-                    
+            <div class="navbar navbar-default navbar-fixed-top">
+                <div class="nav navbar-nav">
+                    <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+                      <span class="sr-only">Toggle Navigation</span>
+                      <span class="icon-bar"></span>
+                      <span class="icon-bar"></span>
+                      <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="{% url 'lr:index' %}">Love Relay</a>
                 </div>
-            </nav>
+
+                <div class="collapse navbar-collapse navbar-responsive-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown">
+                            <a href="##" class="dropdown-toggle" data-toggle="dropdown">Donation<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{% url 'lr:donation' %}"><span class="glyphicon glyphicon-heart"></span> Donation</a></li>
+                                <li><a href="{% url 'lr:request' %}"><span class="glyphicon glyphicon-envelope"></span> Request</a></li>
+                                <li><a href="{% url 'lr:loan' %}"><span class="glyphicon glyphicon-usd"></span> Loan</a></li>
+                                <li><a href="{% url 'lr:moneys' %}"><span class="glyphicon glyphicon-repeat"></span> Refund</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="##" class="dropdown-toggle" data-toggle="dropdown">List<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{% url 'lr:moneys' %}"><span class="glyphicon glyphicon-list"></span> AllType</a></li>
+                                <li><a href="{% url 'lr:search_money' %}"><span class="glyphicon glyphicon-search"></span> Search Money</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            {% if user.is_authenticated %}
+                                <a href="##" class="dropdown-toggle" data-toggle="dropdown">Hi, {{user.username}}<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a><span class="glyphicon glyphicon-user"></span> Hello, {{ user.username }}.</a></li>
+                                    <li><a href="{% url 'users:logout' %}"><span class="glyphicon glyphicon-log-out"></span> log out</a></li>
+                                </ul>
+                            {% else %}
+                                <a href="##" class="dropdown-toggle" data-toggle="dropdown">Login <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="{% url 'users:login' %}"><span class="glyphicon glyphicon-log-in"></span> log in</a></li>
+                                    <li><a href="{% url 'users:register' %}"><span class="glyphicon glyphicon-user"></span> register</a></li>
+                                </ul>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+            </div>
             
             <div class="container">
             
