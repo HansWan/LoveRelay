@@ -741,18 +741,29 @@ def get_detail_from_url(url):
     return detail
 
 def getword(request, word):
-    return HttpResponse(word, content_type="text/plain")    
+    import urllib.request
+    from lxml import etree
+    url = 'http://www.iciba.com/' + word
+    headers = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0'}  
+    req = urllib.request.Request(url=url, headers=headers)  
+    resp = urllib.request.urlopen(req)
+    html = resp.read()
+    selector = etree.HTML(html)
+    phonetic_symbol = selector.xpath("//div[@class='base-speak']/span[2]/span/text()")
+    word_cn = {}
+    cn = []
+    cns = selector.xpath("//ul[@class='base-list switch_part']/li")
+    for i in range(1, len(cns)+1):
+        cnx1 = selector.xpath("//ul[@class='base-list switch_part']/li["+str(i)+"]/span/text()")              #词性
+        cnx2 = selector.xpath("//ul[@class='base-list switch_part']/li["+str(i)+"]/p//span/text()")              #词义
+        print(str(cnx1 + cnx2))
+        cn.append(str(cnx1 + cnx2))
+    word_cn['en'] = word
+    word_cn['phonetic_symbol'] = phonetic_symbol
+    word_cn['cn'] = cn
+    return HttpResponse(json.dumps(word_cn), content_type="application/json")    
 
 def getwords(request):
-
-#    import sys 
-#    reload(sys) 
-#    sys.setdefaultencoding('utf8')    
-
-#测试open txt files
-        ##################################################################
-
-
     words = []
     with open("/usr/local/itl/python/LoveRelay/static/wordslib03.txt", 'r', encoding='UTF-8') as wordsfile:  
         for line in wordsfile:  
@@ -762,67 +773,7 @@ def getwords(request):
             dict['Phonetic_symbol'] = phonetic_symbol
             dict['Chinese'] = cn
             words.append(dict) 
-#    f0.close()
-        ##################################################################
-
-
-
-
-
-#            reply_text = '天气!'
-    
-    #words = [
-      #{
-        #'English': 'a',
-        #'Chinese': '一个'
-      #},
-      #{
-        #'English': 'abandon',
-        #'Chinese': '放弃'
-      #},
-      #{
-        #'English': 'arrive',
-        #'Chinese': '到达到达'
-      #},
-      #{
-        #'English': 'away',
-        #'Chinese': '离开离开'
-      #},
-      #{
-        #'English': 'along',
-        #'Chinese': '沿着沿着'
-      #},
-      #{
-        #'English': 'ago',
-        #'Chinese': '以前以前'
-      #},
-      #{
-        #'English': 'almost',
-        #'Chinese': '几乎几乎'
-      #},
-      #{
-        #'English': 'ask',
-        #'Chinese': '问'
-      #},
-      #{
-        #'English': 'after',
-        #'Chinese': '以后以后以后'
-      #},
-      #{
-        #'English': 'any',
-        #'Chinese': '任意任意任意'
-      #},
-      #{
-        #'English': 'annoy',
-        #'Chinese': '烦恼烦恼烦恼烦恼'
-      #}
-    #]
     data = words
-#    data = [1,2]
-#    data = serializers.serialize("json", wordlist)
-#    return render(request, 'lr/moneytrack.html', context)
-#    return HttpResponse(moneys)
-#    return HttpResponse(json.dumps(data))
     return HttpResponse(json.dumps(data), content_type="application/json")
                 
 def test(request):
