@@ -749,7 +749,11 @@ def getword(request, word):
     resp = urllib.request.urlopen(req)
     html = resp.read()
     selector = etree.HTML(html)
-    phonetic_symbol = selector.xpath("//div[@class='base-speak']/span[2]/span/text()")[0]
+    phonetic_symbols = selector.xpath("//div[@class='base-speak']//span/text()")
+    phonetic_symbol = ''
+    for i in range(len(phonetic_symbols)):
+        if ('[' in phonetic_symbols[i]):
+            phonetic_symbol = phonetic_symbol + phonetic_symbols[i] + "   "
     word_cn = {}
     cn = []
     cns = selector.xpath("//ul[@class='base-list switch_part']/li")
