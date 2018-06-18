@@ -755,8 +755,9 @@ def getword(request, word):
     cns = selector.xpath("//ul[@class='base-list switch_part']/li")
     for i in range(1, len(cns)+1):
         cn_class = selector.xpath("//ul[@class='base-list switch_part']/li["+str(i)+"]/span/text()")[0]              #词性
+        cn_cns = selector.xpath("//ul[@class='base-list switch_part']/li["+str(i)+"]/p//span/text()")              #词义
         cn_cn = ""
-        for j in range(0, len(cn_cn)):
+        for j in range(0, len(cn_cns)):
             cn_cn = cn_cn + selector.xpath("//ul[@class='base-list switch_part']/li["+str(i)+"]/p//span/text()")[j]
         cn.append(cn_class + ' ' + cn_cn)
     word_cn['en'] = word
