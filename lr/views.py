@@ -749,15 +749,16 @@ def getword(request, word):
     resp = urllib.request.urlopen(req)
     html = resp.read()
     selector = etree.HTML(html)
-    phonetic_symbol = selector.xpath("//div[@class='base-speak']/span[2]/span/text()")
+    phonetic_symbol = selector.xpath("//div[@class='base-speak']/span[2]/span/text()")[0]
     word_cn = {}
     cn = []
     cns = selector.xpath("//ul[@class='base-list switch_part']/li")
     for i in range(1, len(cns)+1):
-        cnx1 = selector.xpath("//ul[@class='base-list switch_part']/li["+str(i)+"]/span/text()")              #词性
-        cnx2 = selector.xpath("//ul[@class='base-list switch_part']/li["+str(i)+"]/p//span/text()")              #词义
-        print(str(cnx1 + cnx2))
-        cn.append(str(cnx1 + cnx2))
+        cn_class = selector.xpath("//ul[@class='base-list switch_part']/li["+str(i)+"]/span/text()")[0]              #词性
+        cn_cn = ""
+        for j in range(0, len(cn_cn)):
+            cn_cn = cn_cn + selector.xpath("//ul[@class='base-list switch_part']/li["+str(i)+"]/p//span/text()")[j]
+        cn.append(cn_class + ' ' + cn_cn)
     word_cn['en'] = word
     word_cn['phonetic_symbol'] = phonetic_symbol
     word_cn['cn'] = cn
