@@ -775,9 +775,9 @@ def getwords(request):
         for line in wordsfile:  
             (en, phonetic_symbol, cn) = line.strip().split('\t')  
             dict = {}
-            dict['English'] = en
-            dict['Phonetic_symbol'] = phonetic_symbol
-            dict['Chinese'] = cn
+            dict['English'] = en.strip(' ')
+            dict['Phonetic_symbol'] = phonetic_symbol.strip(' ')
+            dict['Chinese'] = cn.strip(' ')
             words.append(dict) 
     data = words
     return HttpResponse(json.dumps(data), content_type="application/json")
