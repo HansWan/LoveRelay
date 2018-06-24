@@ -781,6 +781,20 @@ def getwords(request):
             words.append(dict) 
     data = words
     return HttpResponse(json.dumps(data), content_type="application/json")
+
+def getwordslibs(request):
+    wordslibs = []
+    with open("/usr/local/itl/python/LoveRelay/static/wordslibs.txt", 'r', encoding='UTF-8') as wordslibsfile:  
+        for line in wordslibsfile:  
+            (libid, libname, wordsquantity, ready) = line.strip().split('\t') 
+            if ready: 
+                dict = {}
+                dict['libid'] = libid.strip(' ').strip('\xa0')
+                dict['libname'] = libname.strip(' ').strip('\xa0')
+                dict['wordsquantity'] = wordsquantity.strip(' ').strip('\xa0')
+                wordslibs.append(dict) 
+    data = wordslibs
+    return HttpResponse(json.dumps(data), content_type="application/json")
                 
 def test(request):
     from selenium import webdriver
