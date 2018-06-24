@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^makegraph/(?P<money_id>\d+)/(?P<rand>\d+)/', views.makegraph, name='makegraph'),
     url(r'^makebar/$', views.makebar, name='makebar'),
     url(r'^query/(?P<money_id>\d+)/$', views.query, name='query'),
+    url(r'^getwordslibs/$', views.getwordslibs, name='getwordslibs'),
     url(r'^getwords/$', views.getwords, name='getwords'),
     url(r'^getword/(?P<word>\w+)/$', views.getword, name='getword'),
     url(r'^test/$', views.test, name='test'),
