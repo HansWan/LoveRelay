@@ -781,7 +781,7 @@ def getwordslib(request, lib_id):
                         worddetail = wordline.strip().split('\t')  
                         if len(worddetail) == 3:    #有些词没有发音文件, 就用空格代替
                             worddetail.append('')
-                        (en, phonetic_symbol, cn), pronunciation) = worddetail 
+                        (en, phonetic_symbol, cn, pronunciation) = worddetail 
                         dict = {}
                         dict['English'] = en.strip(' ').strip('\xa0')
                         dict['Phonetic_symbol'] = phonetic_symbol.strip(' ').strip('\xa0')
