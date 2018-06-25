@@ -775,7 +775,7 @@ def getwordslib(request, lib_id):
         for line in wordslibsfile:  
             (libid, libname, wordsquantity, ready) = line.strip().split('\t') 
             if libid == lib_id: 
-                libfilename = "/usr/local/itl/python/LoveRelay/static/" + libname + "（" + str(wordsquantity) + "）.txt"
+                libfilename = "/usr/local/itl/python/LoveRelay/static/" + str(libid) + "）.txt"
                 with open(libfilename, 'r', encoding='UTF-8') as wordsfile:  
                     for line in wordsfile:  
                         (en, phonetic_symbol, cn) = line.strip().split('\t')  
