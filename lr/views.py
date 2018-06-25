@@ -769,18 +769,23 @@ def getword(request, word):
     word_cn['cn'] = cn
     return HttpResponse(json.dumps(word_cn), content_type="application/json")    
 
-def getwords(request):
+def getwordslib(request, lib_id):
     words = []
-    with open("/usr/local/itl/python/LoveRelay/static/wordslib03.txt", 'r', encoding='UTF-8') as wordsfile:  
-        for line in wordsfile:  
-            (en, phonetic_symbol, cn) = line.strip().split('\t')  
-            dict = {}
-            dict['English'] = en.strip(' ').strip('\xa0')
-            dict['Phonetic_symbol'] = phonetic_symbol.strip(' ').strip('\xa0')
-            dict['Chinese'] = cn.strip(' ').strip('\xa0')
-            words.append(dict) 
-    data = words
-    return HttpResponse(json.dumps(data), content_type="application/json")
+    with open("/usr/local/itl/python/LoveRelay/static/wordslibs.txt", 'r', encoding='UTF-8') as wordslibsfile:  
+        for line in wordslibsfile:  
+            (libid, libname, wordsquantity, ready) = line.strip().split('\t') 
+            if libid == lib_id: 
+                libfilename = "/usr/local/itl/python/LoveRelay/static/" + libname + "（" + str(wordsquantity) + "）.txt"
+                with open(libfilename, 'r', encoding='UTF-8') as wordsfile:  
+                    for line in wordsfile:  
+                        (en, phonetic_symbol, cn) = line.strip().split('\t')  
+                        dict = {}
+                        dict['English'] = en.strip(' ').strip('\xa0')
+                        dict['Phonetic_symbol'] = phonetic_symbol.strip(' ').strip('\xa0')
+                        dict['Chinese'] = cn.strip(' ').strip('\xa0')
+                        words.append(dict) 
+                data = words
+                return HttpResponse(json.dumps(data), content_type="application/json")
 
 def getwordslibs(request):
     wordslibs = []
