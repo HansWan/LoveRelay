@@ -778,11 +778,13 @@ def getwordslib(request, lib_id):
                 libfilename = "/usr/local/itl/python/LoveRelay/static/" + str(libid) + ".txt"
                 with open(libfilename, 'r', encoding='UTF-8') as wordsfile:  
                     for line in wordsfile:  
-                        (en, phonetic_symbol, cn) = line.strip().split('\t')  
+                        (en, phonetic_symbol, cn, pronunciation) = line.strip().split('\t')  
                         dict = {}
                         dict['English'] = en.strip(' ').strip('\xa0')
                         dict['Phonetic_symbol'] = phonetic_symbol.strip(' ').strip('\xa0')
                         dict['Chinese'] = cn.strip(' ').strip('\xa0')
+                        dict['pronunciation'] = pronunciation.strip(' ').strip('\xa0')
+                        
                         words.append(dict) 
                 data = words
                 return HttpResponse(json.dumps(data), content_type="application/json")
