@@ -774,20 +774,31 @@ def getwordslib(request, lib_id):
     with open("/usr/local/itl/python/LoveRelay/static/wordslibs.txt", 'r', encoding='UTF-8') as wordslibsfile:  
         for line in wordslibsfile:  
             (libid, libname, wordsquantity, ready) = line.strip().split('\t') 
+            #只返回指定的词库
             if libid == lib_id: 
                 libfilename = "/usr/local/itl/python/LoveRelay/static/" + str(libid) + ".txt"
                 with open(libfilename, 'r', encoding='UTF-8') as wordsfile:  
                     for wordline in wordsfile:
-                        worddetail = wordline.strip().split('\t')  
-                        if len(worddetail) == 3:    #有些词没有发音文件, 就用空格代替
-                            worddetail.append('')
-                        (en, phonetic_symbol, cn, pronunciation) = worddetail 
+                        worddetail = wordline.strip().split('\t')
                         dict = {}
-                        dict['English'] = en.strip(' ').strip('\xa0')
-                        dict['Phonetic_symbol'] = phonetic_symbol.strip(' ').strip('\xa0')
-                        dict['Chinese'] = cn.strip(' ').strip('\xa0')
-                        dict['pronunciation'] = pronunciation.strip(' ').strip('\xa0')
-                        
+                        dict['English'] = worddetail[0].strip(' ').strip('\xa0')
+                        if len(worddetail) == 1:    #有些词只有英文，其他什么都没有，放弃
+                            continue
+                        if len(worddetail) == 2:    #有些词只有英文和中文解释，没有音标和发音文件
+                            dict['Phonetic_symbol'] = ''
+                            dict['Chinese'] = worddetail[1].strip(' ').strip('\xa0')
+                            dict['pronunciation'] = ''
+                            words.append(dict) 
+                            continue
+                        if len(worddetail) == 3:    #只可能没有发音文件，没有音标的，是4个值
+                            dict['Phonetic_symbol'] = worddetail[1].strip(' ').strip('\xa0')
+                            dict['Chinese'] = worddetail[2].strip(' ').strip('\xa0')
+                            dict['pronunciation'] = ''
+                            words.append(dict) 
+                            continue
+                        dict['Phonetic_symbol'] = worddetail[1].strip(' ').strip('\xa0')
+                        dict['Chinese'] = worddetail[2].strip(' ').strip('\xa0')
+                        dict['pronunciation'] = worddetail[3].strip(' ').strip('\xa0')
                         words.append(dict) 
                 data = words
                 return HttpResponse(json.dumps(data), content_type="application/json")
