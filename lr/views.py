@@ -776,10 +776,6 @@ def getwordslib(request, lib_id):
             (libid, libname, wordsquantity, ready) = line.strip().split('\t') 
             #只返回指定的词库
             if (libid == lib_id and ready): 
-
-                data = {'key1': 'key'}
-                return HttpResponse(json.dumps(data), content_type="application/json") 
-
                 libfilename = "/usr/local/itl/python/LoveRelay/static/" + str(libid) + ".txt"
                 with open(libfilename, 'r', encoding='UTF-8') as wordsfile:  
                     for wordline in wordsfile:
