@@ -771,7 +771,9 @@ def getword(request, word):
 
 def getwordslib(request, lib_id):
     words = []
-    with open("/usr/local/itl/python/LoveRelay/static/wordslibs.txt", 'r', encoding='UTF-8') as wordslibsfile:  
+    with open("/usr/local/itl/python/LoveRelay/static/wordslibs.txt", 'r', encoding='UTF-8') as wordslibsfile: 
+        data = {'key': 'key'}
+        return HttpResponse(json.dumps(data), content_type="application/json") 
         for line in wordslibsfile:  
             (libid, libname, wordsquantity, ready) = line.strip().split('\t') 
             #只返回指定的词库
