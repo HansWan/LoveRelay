@@ -804,7 +804,7 @@ def getwordslib(request, lib_id):
                             continue
                         dict['Phonetic_symbol'] = worddetail[1].strip(' ').strip('\xa0')
                         dict['Chinese'] = worddetail[2].strip(' ').strip('\xa0')
-                        dict['pronunciation'] = settings.STATIC_URL + worddetail[3].strip(' ').strip('\xa0')
+                        dict['pronunciation'] = settings.STATIC_ROOT + worddetail[3].strip(' ').strip('\xa0')
                         words.append(dict) 
                 data = words
                 return HttpResponse(json.dumps(data), content_type="application/json")
