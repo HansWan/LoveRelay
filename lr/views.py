@@ -4,6 +4,7 @@ from django.http import HttpResponse
 import json
 from django.core import serializers
 from django.urls import reverse
+#from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.db import connection
 import hashlib
@@ -771,6 +772,7 @@ def getword(request, word):
 
 def getwordslib(request, lib_id):
     words = []
+ #   pronunciation_mp3_path = "http://
     with open("/usr/local/itl/python/LoveRelay/static/wordslibs.txt", 'r', encoding='UTF-8') as wordslibsfile: 
         for line in wordslibsfile:  
             (libid, libname, wordsquantity, ready) = line.strip().split('\t') 
@@ -798,7 +800,7 @@ def getwordslib(request, lib_id):
                             continue
                         dict['Phonetic_symbol'] = worddetail[1].strip(' ').strip('\xa0')
                         dict['Chinese'] = worddetail[2].strip(' ').strip('\xa0')
-                        dict['pronunciation'] = worddetail[3].strip(' ').strip('\xa0')
+                        dict['pronunciation'] = settings.STATIC_URL + worddetail[3].strip(' ').strip('\xa0')
                         words.append(dict) 
                 data = words
                 return HttpResponse(json.dumps(data), content_type="application/json")
