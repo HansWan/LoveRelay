@@ -4,7 +4,11 @@ from django.http import HttpResponse
 import json
 from django.core import serializers
 from django.urls import reverse
-#from django.conf import settings
+
+#添加static文件夹路径
+from django.conf import settings
+from django.conf.urls.static import static
+
 from django.contrib.auth.decorators import login_required
 from django.db import connection
 import hashlib
