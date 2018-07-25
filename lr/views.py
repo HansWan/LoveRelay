@@ -771,7 +771,7 @@ def getword(request, word):
 
 def getwordslib(request, lib_id):
     words = []
-    pronunciation_mp3_path = "http://58.87.106.252/static/"
+    pronunciation_mp3_path = "https://www.loverelay.com/static/"
     with open("/usr/local/itl/python/LoveRelay/static/wordslibs.txt", 'r', encoding='UTF-8') as wordslibsfile: 
         for line in wordslibsfile:  
             (libid, libname, wordsquantity, ready) = line.strip().split('\t') 
