@@ -140,7 +140,7 @@ def index(request):
 
         elif content == "天气":
             import urllib.request
-            from bs4 import BeautifulSoup
+#            from bs4 import BeautifulSoup
             from lxml import etree
             url = 'http://www.weather.com.cn/weather/101200101.shtml'
             headers = {'User-Agent':'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'}
@@ -619,7 +619,7 @@ def track(request, money_id, add):
 
 def get_urls_by_keywords(url, keywords):
     import urllib.request
-    from bs4 import BeautifulSoup
+#    from bs4 import BeautifulSoup
     from lxml import etree
     headers = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0'}  
     req = urllib.request.Request(url=url, headers=headers)  
@@ -655,7 +655,7 @@ def get_urls_by_keywords(url, keywords):
 
 def get_contents_from_urls(urls):
     import urllib.request
-    from bs4 import BeautifulSoup
+#    from bs4 import BeautifulSoup
     from lxml import etree
     headers = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0'}  
     contents = []
@@ -709,7 +709,7 @@ def get_contents_from_urls(urls):
 
 def get_detail_from_url(url):
     import urllib.request
-    from bs4 import BeautifulSoup
+#    from bs4 import BeautifulSoup
     from lxml import etree
     headers = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0'}  
     detail = ''
