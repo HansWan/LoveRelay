@@ -1,19 +1,32 @@
-{% extends 'lr/base.html' %}
+<!--        {% extends 'lr/base.html' %}        -->
 
-{% block content %}
+<!--        {% block content %}        -->
 
-    <h3>Love Relay helps students to finish their education.</h3>
-    <h3>We're looking forward to seeing you here, either you're a student or a philanthropist!</h3>
-    <p></p>
-    <p></p>
-    <p></p>
-    <p></p>
-    <p></p>
-    <p></p>
+
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        <title>Love Relay - 爱心接力站</title>
+        {% bootstrap_css %}
+        {% bootstrap_javascript %}
+    </head>
+
+    <body>
+        {% load static %}
+        <img src="{% static 'loverelay logo.png' %}" alt="LoveRelay.com" width="160" height="200"></img>
+
     <div style="width:300px;margin:0 auto; padding:20px 0;">
         <a href='http://www.miibeian.gov.cn' target='_blank'>鄂ICP备18016516号</a>
         <p></p>
 	    <a href='http://www.beian.gov.cn' target='_blank'>鄂公网安备42011102002471号</a>
 	</div>
 
-{% endblock content %}
+    </body>
+
+</html>
+
