@@ -9,12 +9,60 @@
 <!--        <meta http-equiv="Refresh" content="5;url='{% url 'lr:index' %}'">  -->
         <meta name="viewport" content="width=device-width, initial-scale=1">
         
-        <title>Love Relay</title>
+        <title>Love Relay - 爱心接力站</title>
         {% bootstrap_css %}
         {% bootstrap_javascript %}
     </head>
 
     <body>
+
+        <style>
+            .glyphicon-home{
+                color: red;
+                font-size:12px;
+            }
+            .glyphicon-heart{
+                color: red;
+                font-size:12px;
+            }
+            .glyphicon-envelope{
+                color: red;
+                font-size:12px;
+            }
+            .glyphicon-usd{
+                color: red;
+                font-size:12px;
+            }
+            .glyphicon-repeat{
+                color: red;
+                font-size:12px;
+            }
+            .glyphicon-list{
+                color: red;
+                font-size:12px;
+            }
+            .glyphicon-search{
+                color: red;
+                font-size:12px;
+            }
+            .glyphicon-log-out{
+                color: red;
+                font-size:12px;
+            }
+            .glyphicon-log-in{
+                color: red;
+                font-size:12px;
+            }
+            .glyphicon-user{
+                color: red;
+                font-size:12px;
+            }
+            .div-inline{
+                display:inline;
+                top:6px;
+            }
+        </style>
+
         {% load static %}
         <div class="container" style="height: 190px; border-bottom: 1px solid #eeeeee;">
             <div class="row">
@@ -28,8 +76,6 @@
         </div>
 
         <div class="container">
-        
-            {% load static %}
             <div class="page-header">
                 {% block header %}{% endblock header %}
             </div>

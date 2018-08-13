@@ -1,126 +1,60 @@
+{% extends 'lr/base.html' %}
 {% load bootstrap3 %}
 
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        
-        <title>Love Relay - 爱心接力站</title>
-        {% bootstrap_css %}
-        {% bootstrap_javascript %}
-    </head>
+{% block header %}
+    <div class="container" style="height: 40px;">
+        <div class="row">
+            <div class="col-sm-6">
+                <a href="{% url 'lr:index' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background:#f79646; color:#000000; border-style: none; outline: none;"><span class="glyphicon glyphicon-home" style="color:#ff0000;"></span>首页</button></a>
+                <a href="{% url 'lr:donation' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background:#fbd4b4; color:#aaaaaa; border-style: none; outline: none;"><span class="glyphicon glyphicon-heart" style="color:#aaaaaa;"></span>捐赠</button></a>
+                <a href="{% url 'lr:request' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background:#fbd4b4; color:#aaaaaa; border-style: none; outline: none;"><span class="glyphicon glyphicon-envelope" style="color:#aaaaaa;"></span>求助</button></a>
+                <a href="{% url 'lr:moneys' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background:#fbd4b4; color:#aaaaaa; border-style: none; outline: none;"><span class="glyphicon glyphicon-list" style="color:#aaaaaa;"></span>爱心树</button></a>
+                <a href="{% url 'lr:index' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background:#fbd4b4; color:#aaaaaa; border-style: none; outline: none;"><span class="glyphicon glyphicon-usd" style="color:#aaaaaa;"></span>本站说明</button></a>
+            </div>
+        </div>
+    </div>
+{% endblock header %}
 
-    <body>
+{% block content %}
+    
+    <div class="container" style="height: 425px;">
+        <div class="row">
+            <div class="col-sm-4">
+                <img src="{% static 'activities tree.png' %}" alt="LoveRelay.com" width="425" height="380" style="position:absolute; top: 20px;"></img>
+            </div>
+        </div>
+    </div>
 
-
-        <style>
-            .glyphicon-home{
-                color: red;
-                font-size:12px;
-            }
-            .glyphicon-heart{
-                color: red;
-                font-size:12px;
-            }
-            .glyphicon-envelope{
-                color: red;
-                font-size:12px;
-            }
-            .glyphicon-usd{
-                color: red;
-                font-size:12px;
-            }
-            .glyphicon-repeat{
-                color: red;
-                font-size:12px;
-            }
-            .glyphicon-list{
-                color: red;
-                font-size:12px;
-            }
-            .glyphicon-search{
-                color: red;
-                font-size:12px;
-            }
-            .glyphicon-log-out{
-                color: red;
-                font-size:12px;
-            }
-            .glyphicon-log-in{
-                color: red;
-                font-size:12px;
-            }
-            .glyphicon-user{
-                color: red;
-                font-size:12px;
-            }
-            .div-inline{
-                display:inline;
-                top:6px;
-            }
-        </style>
-
-
-        {% load static %}
-        
-        <div class="container" style="height: 40px;">
-            <div class="row">
-	    	    <div class="col-sm-6">
-                    <a href="{% url 'lr:index' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background:#f79646; color:#000000; border-style: none; outline: none;"><span class="glyphicon glyphicon-home" style="color:#ff0000;"></span>首页</button></a>
-                    <a href="{% url 'lr:donation' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background:#fbd4b4; color:#aaaaaa; border-style: none; outline: none;"><span class="glyphicon glyphicon-heart" style="color:#aaaaaa;"></span>捐赠</button></a>
-                    <a href="{% url 'lr:request' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background:#fbd4b4; color:#aaaaaa; border-style: none; outline: none;"><span class="glyphicon glyphicon-envelope" style="color:#aaaaaa;"></span>求助</button></a>
-                    <a href="{% url 'lr:moneys' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background:#fbd4b4; color:#aaaaaa; border-style: none; outline: none;"><span class="glyphicon glyphicon-list" style="color:#aaaaaa;"></span>爱心树</button></a>
-                    <a href="{% url 'lr:index' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background:#fbd4b4; color:#aaaaaa; border-style: none; outline: none;"><span class="glyphicon glyphicon-usd" style="color:#aaaaaa;"></span>本站说明</button></a>
+    <div class="container" style="height: 50px; border-bottom: 1px solid #eeeeee;">
+        <div class="row">
+            {% if user.is_authenticated %}
+                <a href="##">Hi, {{user.username}}</a>
+                <a href="{% url 'users:logout' %}"><span class="glyphicon glyphicon-log-out"></span> 退  出</a>
+            {% else %}
+                <div class="col-sm-1">
                 </div>
-            </div>
-        </div>
-
-        <div class="container" style="height: 425px;">
-            <div class="row">
-	    	    <div class="col-sm-4">
-                    <img src="{% static 'activities tree.png' %}" alt="LoveRelay.com" width="425" height="380" style="position:absolute; top: 20px;"></img>
+                <div class="col-sm-1">
+                    <a href="{% url 'users:login' %}"><button type="button" class="btn btn-primary btn-lg" style="background:#f79646; color:#000000; border-style:none; outline:none;"><span class="glyphicon glyphicon-log-in" style="font-size:18px;"></span>  登  录  </button></a>
                 </div>
-            </div>
+                <div class="col-sm-1">
+                    <a>忘记密码?</a>
+                </div>
+                <div class="col-sm-1">
+                    <a href="{% url 'users:register' %}"><button type="button" class="btn btn-default btn-lg" style="background:#aaaaaa; color:#000000; border-style:none; outline:none;"><span class="glyphicon glyphicon-user" style="font-size: 18px;"></span>  注  册  </button></a>
+                </div>
+            {% endif %}
         </div>
+    </div>
 
-        <div class="container" style="height: 50px; border-bottom: 1px solid #eeeeee;">
-
-            <div class="row">
-
-
-                {% if user.is_authenticated %}
-                    <a href="##">Hi, {{user.username}}</a>
-                    <a href="{% url 'users:logout' %}"><span class="glyphicon glyphicon-log-out"></span> 退  出</a>
-                {% else %}
-                    <div class="col-sm-1">
-                    </div>
-                    <div class="col-sm-1">
-                        <a href="{% url 'users:login' %}"><button type="button" class="btn btn-primary btn-lg" style="background:#f79646; color:#000000; border-style:none; outline:none;"><span class="glyphicon glyphicon-log-in" style="font-size:18px;"></span>  登  录  </button></a>
-                    </div>
-                    <div class="col-sm-1">
-                        <a>忘记密码?</a>
-                    </div>
-                    <div class="col-sm-1">
-                        <a href="{% url 'users:register' %}"><button type="button" class="btn btn-default btn-lg" style="background:#aaaaaa; color:#000000; border-style:none; outline:none;"><span class="glyphicon glyphicon-user" style="font-size: 18px;"></span>  注  册  </button></a>
-                    </div>
-                {% endif %}
-
-
-            </div>
-
+    <div class="container">
+        <div class="row">
+            <a href="{% url 'lr:index' %}" target='_self' style="color:#aaaaaa; font-size: 9px; text-align:center">LoveRelay版权所有  Copyright © 2018 LoveRelay, All Rights Reserved</a>
+            <a href='http://www.miibeian.gov.cn' target='_blank' style="color:#aaaaaa; font-size: 9px; text-align:center">  鄂ICP备18016516号  </a>
+            <a href='http://www.beian.gov.cn' target='_blank' style="color:#aaaaaa; font-size: 9px; text-align:center"><img src="{% static 'police.png' %}">鄂公网安备42011102002471号</a>
         </div>
+    </div>
 
-        <div class="container">
-            <div class="row">
-                <a href="{% url 'lr:index' %}" target='_self' style="color:#aaaaaa; font-size: 9px; text-align:center">LoveRelay版权所有  Copyright © 2018 LoveRelay, All Rights Reserved</a>
-                <a href='http://www.miibeian.gov.cn' target='_blank' style="color:#aaaaaa; font-size: 9px; text-align:center">  鄂ICP备18016516号  </a>
-                <a href='http://www.beian.gov.cn' target='_blank' style="color:#aaaaaa; font-size: 9px; text-align:center"><img src="{% static 'police.png' %}">鄂公网安备42011102002471号</a>
-            </div>
-	    </div>
+{% endblock content %}
 
-    </body>
-
-</html>
+        
 
