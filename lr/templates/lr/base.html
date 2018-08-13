@@ -87,7 +87,9 @@
 
         <div class="container">
             <div class="row">
-                {% block footer %}{% endblock footer %}
+                <a href="{% url 'lr:index' %}" target='_self' style="color:#aaaaaa; font-size: 9px; text-align:center">LoveRelay版权所有  Copyright © 2018 LoveRelay, All Rights Reserved</a>
+                <a href='http://www.miibeian.gov.cn' target='_blank' style="color:#aaaaaa; font-size: 9px; text-align:center">  鄂ICP备18016516号  </a>
+                <a href='http://www.beian.gov.cn' target='_blank' style="color:#aaaaaa; font-size: 9px; text-align:center"><img src="{% static 'police.png' %}">鄂公网安备42011102002471号</a>
             </div>
         </div>
 
