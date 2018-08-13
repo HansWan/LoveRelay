@@ -15,6 +15,16 @@
     </head>
 
     <body>
+        <div class="container">
+        
+            {% load static %}
+            <div class="page-header">
+                {% block header %}{% endblock header %}
+            </div>
+            <div>
+                {% block content %}{% endblock content %}
+            </div>
+        </div><!-- /container -->
     </body>
 </html>
 
