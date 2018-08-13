@@ -75,7 +75,14 @@
             </div>
         </div>
 
-        {% block header %}{% endblock header %}
+        <div class="container" style="height: 40px;">
+            <div class="row">
+                <div class="col-sm-6">
+                    {% block header %}{% endblock header %}
+                </div>
+            </div>
+        </div>
+
         {% block content %}{% endblock content %}
     </body>
 </html>
