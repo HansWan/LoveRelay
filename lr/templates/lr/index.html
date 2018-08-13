@@ -13,7 +13,58 @@
     </head>
 
     <body>
+
+
+        <style>
+            .glyphicon-home{
+                color: red;
+                font-size:12px;
+            }
+            .glyphicon-heart{
+                color: red;
+                font-size:12px;
+            }
+            .glyphicon-envelope{
+                color: red;
+                font-size:12px;
+            }
+            .glyphicon-usd{
+                color: red;
+                font-size:12px;
+            }
+            .glyphicon-repeat{
+                color: red;
+                font-size:12px;
+            }
+            .glyphicon-list{
+                color: red;
+                font-size:12px;
+            }
+            .glyphicon-search{
+                color: red;
+                font-size:12px;
+            }
+            .glyphicon-log-out{
+                color: red;
+                font-size:12px;
+            }
+            .glyphicon-log-in{
+                color: red;
+                font-size:12px;
+            }
+            .glyphicon-user{
+                color: red;
+                font-size:12px;
+            }
+            .div-inline{
+                display:inline;
+                top:6px;
+            }
+        </style>
+
+
         {% load static %}
+        
         <div class="container" style="height: 190px; border-bottom: 1px solid #eeeeee;">
             <div class="row">
 	    	    <div class="col-sm-2">
@@ -28,11 +79,11 @@
         <div class="container" style="height: 40px;">
             <div class="row">
 	    	    <div class="col-sm-6">
-                    <a href="{% url 'lr:index' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background: #f79646;"><span class="glyphicon glyphicon-heart"></span>首页</button></a>
-                    <a href="{% url 'lr:donation' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background: #fbd4b4;">捐赠</button></a>
-                    <a href="{% url 'lr:request' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background: #fbd4b4;">求助</button></a>
-                    <a href="{% url 'lr:moneys' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background: #fbd4b4;">爱心树</button></a>
-                    <a href="{% url 'lr:index' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background: #fbd4b4;">本站说明</button></a>
+                    <a href="{% url 'lr:index' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background: #f79646;"><span class="glyphicon glyphicon-home"></span>首页</button></a>
+                    <a href="{% url 'lr:donation' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background: #fbd4b4;"><span class="glyphicon glyphicon-heart"></span>捐赠</button></a>
+                    <a href="{% url 'lr:request' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background: #fbd4b4;"><span class="glyphicon glyphicon-envelope"></span>求助</button></a>
+                    <a href="{% url 'lr:moneys' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background: #fbd4b4;"><span class="glyphicon glyphicon-repeat"></span>爱心树</button></a>
+                    <a href="{% url 'lr:index' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background: #fbd4b4;"><span class="glyphicon glyphicon-usd"></span>本站说明</button></a>
                 </div>
             </div>
         </div>
