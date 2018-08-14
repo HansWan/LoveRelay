@@ -81,7 +81,7 @@
                         {% if money.hasparent %}
                             <td width=15 align=right><h5><a href="{% url 'lr:moneytrack' money.parentmoney_id %}">父记录</a></h5></td>
                         {% else %}
-                            <td width=15 align=right><h5><a href="{% url 'lr:moneys'%}" title='Show root records.'>根记录</a></h5></td>
+                            <td width=15 align=right><h5><a href="{% url 'lr:moneys'%}" title='显示最开始的记录(根记录)。.'>根记录</a></h5></td>
                         {% endif %}
 
                         {% if money.canrefund %}
@@ -99,7 +99,7 @@
                     </a>
                     <div class="media-body">
                         <h4 class="media-heading">爱心传递</h4>
-                        <div>这是初始捐赠记录，点列表中的 <small><span class="badge">child</span></small> 能看到爱心传递路线。</div>
+                        <div>这是初始捐赠记录，点列表中的 <small><span class="badge">子记录</span></small> 能看到爱心传递路线。</div>
                     </div>
                     <button name='submit' id="showpicbutton" class="btn btn-info btn-sm">隐藏图片</button>
                 </div>
