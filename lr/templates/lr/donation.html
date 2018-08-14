@@ -12,9 +12,8 @@
 
 {% block content %}
     
-    <div class="container" style="height: 425px;">
+    <div class="container" style="height: 625px;">
         <div class="row">
-            <div class="col-sm-4">
                 <form action="{% url 'lr:donation' %}" class='form' method='post'>
                     {% csrf_token %}
                     {% bootstrap_form form %}
@@ -23,7 +22,6 @@
                         <button name='submit'>donate</button>
                     {% endbuttons %}
                 </form>
-            </div>
         </div>
     </div>
 {% endblock content %}
