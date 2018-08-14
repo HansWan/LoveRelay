@@ -73,7 +73,7 @@
                     {% if money.candelete %}
                         <td width=15 align=right><h5><a href="{% url 'lr:delete_money' money.money_id %}">删除</a></h5></td>
                     {% else %}
-                        <td width=15 align=right><h5><a href="" disabled='disabled' title='有关联的记录，不能删除。'>------</a></h5></td>
+                        <td width=15 align=right><h5><a href="" disabled='disabled' title='已有关联的记录，不能删除。'>------</a></h5></td>
                     {% endif %}
 
                     {% if money.haschild %}

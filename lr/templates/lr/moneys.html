@@ -64,28 +64,28 @@
                         {% else %}
                             <td width=150 align=right><h5>{{ money.purpose }}</h5></td>
                         {% endifequal %}
-                        <td width=15 align=right><h5><a href="{% url 'lr:edit_money' money.id %}">edit</a></h5></td>
+                        <td width=15 align=right><h5><a href="{% url 'lr:edit_money' money.id %}">修改</a></h5></td>
                         {% if money.candelete %}
-                            <td width=15 align=right><h5><a href="{% url 'lr:delete_money' money.id %}">delete</a></h5></td>
+                            <td width=15 align=right><h5><a href="{% url 'lr:delete_money' money.id %}">删除</a></h5></td>
                         {% else %}
-                            <td width=15 align=right><h5><a href="" disabled='disabled' title='Parentmoney, not allowed to delete.'>------</a></h5></td>
+                            <td width=15 align=right><h5><a href="" disabled='disabled' title='已有关联的记录，不能删除。'>------</a></h5></td>
                         {% endif %}
 
                         {% if money.haschild %}
-                            <td width=15 align=right><h5><a href="{% url 'lr:moneytrack' money.id %}"><span class="badge" style="background-color:green">child</span></a></h5></td>
+                            <td width=15 align=right><h5><a href="{% url 'lr:moneytrack' money.id %}"><span class="badge" style="background-color:green">子记录</span></a></h5></td>
                         {% else %}
                             <td width=15 align=right><h5><a href="" disabled='disabled' title='No child.'>------</a></h5></td>
                         {% endif %}
 
 
                         {% if money.hasparent %}
-                            <td width=15 align=right><h5><a href="{% url 'lr:moneytrack' money.parentmoney_id %}">parent</a></h5></td>
+                            <td width=15 align=right><h5><a href="{% url 'lr:moneytrack' money.parentmoney_id %}">父记录</a></h5></td>
                         {% else %}
-                            <td width=15 align=right><h5><a href="{% url 'lr:moneys'%}" title='Show root records.'>root</a></h5></td>
+                            <td width=15 align=right><h5><a href="{% url 'lr:moneys'%}" title='Show root records.'>根记录</a></h5></td>
                         {% endif %}
 
                         {% if money.canrefund %}
-                            <td width=15 align=right><h5><a href="{% url 'lr:refund' money.id %}">refund</a></h5></td>
+                            <td width=15 align=right><h5><a href="{% url 'lr:refund' money.id %}">回赠</a></h5></td>
                         {% else %}
                             <td width=15 align=right><h5><a href="" disabled='disabled' title='Not necessary to refund.'>------</a></h5></td>
                         {% endif %}
