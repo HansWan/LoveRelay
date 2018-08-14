@@ -2,12 +2,12 @@
 {% load bootstrap3 %}
 
 {% block header %}
-{% load static %}
-
-    <h4><span class="label label-default">Donation/Request</span></h4>
-<!--    <a href="{% url 'lr:new_money' %}" style="display:block;text-align: right;">Add money</a>    -->
-    
-
+    {% load static %}
+    <a href="{% url 'lr:index' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background:#fbd4b4; color:#aaaaaa; border-style: none; outline: none;"><span class="glyphicon glyphicon-home" style="color:#aaaaaa;"></span>首页</button></a>
+    <a href="{% url 'lr:donation' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background:#fbd4b4; color:#aaaaaa; border-style: none; outline: none;"><span class="glyphicon glyphicon-heart" style="color:#aaaaaa;"></span>捐赠</button></a>
+    <a href="{% url 'lr:request' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background:#fbd4b4; color:#aaaaaa; border-style: none; outline: none;"><span class="glyphicon glyphicon-envelope" style="color:#aaaaaa;"></span>求助</button></a>
+    <a href="{% url 'lr:moneys' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background:#f79646; color:#000000; border-style: none; outline: none;"><span class="glyphicon glyphicon-list" style="color:#ff0000;"></span>爱心树</button></a>
+    <a href="{% url 'lr:index' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background:#fbd4b4; color:#aaaaaa; border-style: none; outline: none;"><span class="glyphicon glyphicon-usd" style="color:#aaaaaa;"></span>本站说明</button></a>
 {% endblock header %}
 
 {% block content %}
@@ -35,75 +35,78 @@
           
     </script>    
     
-    {% if not moneys|length_is:"0" %}
-		<table class="table table-bordered table-hover table-condensed table-responsive">
-				<td width=50 align=right><b>ID</b></td>
-				<td width=150 align=right><b>Amount</b></td>
-				<td width=150 align=right><b>User</b></td>
-				<td width=150 align=right><b>Cashtype</b></td>
-				<td width=150 align=right><b>Purpose</b></td>
-				<td width=15 align=right><b>Edit</b></td>
-				<td width=15 align=right><b>Delete</b></td>
-				<td width=15 align=right><b>Child</b></td>
-				<td width=15 align=right><b>Parent</b></td>
-				<td width=15 align=right><b>Refund</b></td>
-			{% for money in moneys %}
-				<tr>
-					{% if forloop.first %}      
-						<td width=50 align=right id="money_id"><h5>{{ money.id }}</h5></td>
-					{% else %}
-						<td width=50 align=right><h5>{{ money.id }}</h5></td>
-					{% endif %}
-					<td width=150 align=right><h5>{{ money.amount }}</h5></td>
-					<td width=150 align=right><h5>{{ money.user }}</h5></td>
-					<td width=150 align=right><h5>{{ money.cashtype }}</h5></td>
-					{% ifequal money.purpose_id 4 %}
-						<td width=150 align=right><h5 style="color:red ">{{ money.purpose }}</h5></td>
-					{% else %}
-						<td width=150 align=right><h5>{{ money.purpose }}</h5></td>
-					{% endifequal %}
-					<td width=15 align=right><h5><a href="{% url 'lr:edit_money' money.id %}">edit</a></h5></td>
-					{% if money.candelete %}
-						<td width=15 align=right><h5><a href="{% url 'lr:delete_money' money.id %}">delete</a></h5></td>
-					{% else %}
-						<td width=15 align=right><h5><a href="" disabled='disabled' title='Parentmoney, not allowed to delete.'>------</a></h5></td>
-					{% endif %}
+    <div class="container" style="height: 625px;">
 
-					{% if money.haschild %}
-						<td width=15 align=right><h5><a href="{% url 'lr:moneytrack' money.id %}"><span class="badge" style="background-color:green">child</span></a></h5></td>
-					{% else %}
-						<td width=15 align=right><h5><a href="" disabled='disabled' title='No child.'>------</a></h5></td>
-					{% endif %}
+        {% if not moneys|length_is:"0" %}
+            <table class="table table-bordered table-hover table-condensed table-responsive">
+                    <td width=50 align=right><b>ID</b></td>
+                    <td width=150 align=right><b>Amount</b></td>
+                    <td width=150 align=right><b>User</b></td>
+                    <td width=150 align=right><b>Cashtype</b></td>
+                    <td width=150 align=right><b>Purpose</b></td>
+                    <td width=15 align=right><b>Edit</b></td>
+                    <td width=15 align=right><b>Delete</b></td>
+                    <td width=15 align=right><b>Child</b></td>
+                    <td width=15 align=right><b>Parent</b></td>
+                    <td width=15 align=right><b>Refund</b></td>
+                {% for money in moneys %}
+                    <tr>
+                        {% if forloop.first %}      
+                            <td width=50 align=right id="money_id"><h5>{{ money.id }}</h5></td>
+                        {% else %}
+                            <td width=50 align=right><h5>{{ money.id }}</h5></td>
+                        {% endif %}
+                        <td width=150 align=right><h5>{{ money.amount }}</h5></td>
+                        <td width=150 align=right><h5>{{ money.user }}</h5></td>
+                        <td width=150 align=right><h5>{{ money.cashtype }}</h5></td>
+                        {% ifequal money.purpose_id 4 %}
+                            <td width=150 align=right><h5 style="color:red ">{{ money.purpose }}</h5></td>
+                        {% else %}
+                            <td width=150 align=right><h5>{{ money.purpose }}</h5></td>
+                        {% endifequal %}
+                        <td width=15 align=right><h5><a href="{% url 'lr:edit_money' money.id %}">edit</a></h5></td>
+                        {% if money.candelete %}
+                            <td width=15 align=right><h5><a href="{% url 'lr:delete_money' money.id %}">delete</a></h5></td>
+                        {% else %}
+                            <td width=15 align=right><h5><a href="" disabled='disabled' title='Parentmoney, not allowed to delete.'>------</a></h5></td>
+                        {% endif %}
+
+                        {% if money.haschild %}
+                            <td width=15 align=right><h5><a href="{% url 'lr:moneytrack' money.id %}"><span class="badge" style="background-color:green">child</span></a></h5></td>
+                        {% else %}
+                            <td width=15 align=right><h5><a href="" disabled='disabled' title='No child.'>------</a></h5></td>
+                        {% endif %}
 
 
-					{% if money.hasparent %}
-						<td width=15 align=right><h5><a href="{% url 'lr:moneytrack' money.parentmoney_id %}">parent</a></h5></td>
-					{% else %}
-						<td width=15 align=right><h5><a href="{% url 'lr:moneys'%}" title='Show root records.'>root</a></h5></td>
-					{% endif %}
+                        {% if money.hasparent %}
+                            <td width=15 align=right><h5><a href="{% url 'lr:moneytrack' money.parentmoney_id %}">parent</a></h5></td>
+                        {% else %}
+                            <td width=15 align=right><h5><a href="{% url 'lr:moneys'%}" title='Show root records.'>root</a></h5></td>
+                        {% endif %}
 
-					{% if money.canrefund %}
-						<td width=15 align=right><h5><a href="{% url 'lr:refund' money.id %}">refund</a></h5></td>
-					{% else %}
-						<td width=15 align=right><h5><a href="" disabled='disabled' title='Not necessary to refund.'>------</a></h5></td>
-					{% endif %}
-				</tr>
-			{% endfor %}
-		</table>
-		{% buttons %}
-			<div class="media">
-				<a class="pull-left" href="#">
-					<img class="media-object img-responsive" src="data:image/png;base64,{{ picture_data }}" id="trackimage" alt="..."></img>
-				</a>
-				<div class="media-body">
-					<h3 class="media-heading">爱心种子</h3>
-					<div>这些都是初始的捐赠记录，点列表中的 <small><span class="badge">child</span></small> 能看到后面的爱心传递情况。</div>
-				</div>
-				<button name='submit' id="showpicbutton" class="btn btn-info btn-sm">hide picture</button>
-			</div>
-		{% endbuttons %}
-    {% else %}
-		<h2><span class="label label-default">No money has been added yet.</span></h2>
-    {% endif %}
-   
+                        {% if money.canrefund %}
+                            <td width=15 align=right><h5><a href="{% url 'lr:refund' money.id %}">refund</a></h5></td>
+                        {% else %}
+                            <td width=15 align=right><h5><a href="" disabled='disabled' title='Not necessary to refund.'>------</a></h5></td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </table>
+            {% buttons %}
+                <div class="media">
+                    <a class="pull-left" href="#">
+                        <img class="media-object img-responsive" src="data:image/png;base64,{{ picture_data }}" id="trackimage" alt="..."></img>
+                    </a>
+                    <div class="media-body">
+                        <h3 class="media-heading">爱心种子</h3>
+                        <div>这些都是初始的捐赠记录，点列表中的 <small><span class="badge">child</span></small> 能看到后面的爱心传递情况。</div>
+                    </div>
+                    <button name='submit' id="showpicbutton" class="btn btn-info btn-sm">hide picture</button>
+                </div>
+            {% endbuttons %}
+        {% else %}
+            <h2><span class="label label-default">No money has been added yet.</span></h2>
+        {% endif %}
+    </div>
+       
 {% endblock content %}
