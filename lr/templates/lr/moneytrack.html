@@ -69,27 +69,27 @@
                     {% else %}
                         <td width=150 align=right><h5>{{ money.purpose }}</h5></td>
                     {% endifequal %}
-                    <td width=15 align=right><h5><a href="{% url 'lr:edit_money' money.money_id %}">edit</a></h5></td>
+                    <td width=15 align=right><h5><a href="{% url 'lr:edit_money' money.money_id %}">修改</a></h5></td>
                     {% if money.candelete %}
-                        <td width=15 align=right><h5><a href="{% url 'lr:delete_money' money.money_id %}">delete</a></h5></td>
+                        <td width=15 align=right><h5><a href="{% url 'lr:delete_money' money.money_id %}">删除</a></h5></td>
                     {% else %}
                         <td width=15 align=right><h5><a href="" disabled='disabled' title='有关联的记录，不能删除。'>------</a></h5></td>
                     {% endif %}
 
                     {% if money.haschild %}
-                        <td width=15 align=right><h5><a href="{% url 'lr:moneytrack' money.money_id %}"><span class="badge" style="background-color:green">child</span></a></h5></td>
+                        <td width=15 align=right><h5><a href="{% url 'lr:moneytrack' money.money_id %}"><span class="badge" style="background-color:green">下级记录</span></a></h5></td>
                     {% else %}
                         <td width=15 align=right><h5><a href="" disabled='disabled' title='No child.'>------</a></h5></td>
                     {% endif %}
 
                     {% if money.hasparent %}
-                        <td width=15 align=right><h5><a href="{% url 'lr:moneytrack' money.parentmoney_id %}">parent</a></h5></td>
+                        <td width=15 align=right><h5><a href="{% url 'lr:moneytrack' money.parentmoney_id %}">上级记录</a></h5></td>
                     {% else %}
-                        <td width=15 align=right><h5><a href="{% url 'lr:moneys'%}" title='显示最开始的记录。'>root</a></h5></td>
+                        <td width=15 align=right><h5><a href="{% url 'lr:moneys'%}" title='显示最开始的记录。'>根记录</a></h5></td>
                     {% endif %}
 
                     {% if money.canrefund %}
-                        <td width=15 align=right><h5><a href="{% url 'lr:refund' money.money_id %}">refund</a></h5></td>
+                        <td width=15 align=right><h5><a href="{% url 'lr:refund' money.money_id %}">回赠</a></h5></td>
                     {% else %}
                         <td width=15 align=right><h5><a href="" disabled='disabled' title='Not necessary to refund.'>------</a></h5></td>
                     {% endif %}
@@ -97,7 +97,7 @@
                 </tr>
             {% empty %}
                 <tr>
-                    <td>No money has been added yet.</td>
+                    <td>暂时还没有捐赠记录。</td>
                 </tr>
             {% endfor %}
         </table>
