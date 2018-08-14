@@ -2,7 +2,11 @@
 {% load bootstrap3 %}
 
 {% block header %}
-    <h4>Delete</h4>
+    <a href="{% url 'lr:index' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background:#fbd4b4; color:#aaaaaa; border-style: none; outline: none;"><span class="glyphicon glyphicon-home" style="color:#aaaaaa;"></span>首页</button></a>
+    <a href="{% url 'lr:donation' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background:#fbd4b4; color:#aaaaaa; border-style: none; outline: none;"><span class="glyphicon glyphicon-heart" style="color:#aaaaaa;"></span>捐赠</button></a>
+    <a href="{% url 'lr:request' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background:#fbd4b4; color:#aaaaaa; border-style: none; outline: none;"><span class="glyphicon glyphicon-envelope" style="color:#aaaaaa;"></span>求助</button></a>
+    <a href="{% url 'lr:moneys' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background:#f79646; color:#000000; border-style: none; outline: none;"><span class="glyphicon glyphicon-tree-deciduous" style="color:#ff0000;"></span>爱心树</button></a>
+    <a href="{% url 'lr:index' %}" style="position:relative; top: 5px"><button type="button" class="btn btn-primary btn-xs" style="background:#fbd4b4; color:#aaaaaa; border-style: none; outline: none;"><span class="glyphicon glyphicon-info-sign" style="color:#aaaaaa;"></span>本站说明</button></a>
 {% endblock header %}
 
 
@@ -35,20 +39,24 @@
         }
     </script>    
 
-    <form id="myform" action="{% url 'lr:delete_money' money_id %}" class='form' method='post'>
-        {% csrf_token %}
-        {% bootstrap_form form %}
-        
-        {% if money.candelete %}
-            {% buttons %}
-                <button name='submit'>delete money</button>
-            {% endbuttons %}
-        {% else %}
-            {% buttons %}
-                <button name='submit' disabled='disabled' title='Parentmoney, not allowed to delete.'>delete money</button>
-            {% endbuttons %}
+    <div class="container" style="height: 625px;">
+
+        <form id="myform" action="{% url 'lr:delete_money' money_id %}" class='form' method='post'>
+            {% csrf_token %}
+            {% bootstrap_form form %}
             
-        {% endif %}
-    </form>
+            {% if money.candelete %}
+                {% buttons %}
+                    <button name='submit'>delete money</button>
+                {% endbuttons %}
+            {% else %}
+                {% buttons %}
+                    <button name='submit' disabled='disabled' title='Parentmoney, not allowed to delete.'>delete money</button>
+                {% endbuttons %}
+                
+            {% endif %}
+        </form>
+
+    </div>
 
 {% endblock content %}
