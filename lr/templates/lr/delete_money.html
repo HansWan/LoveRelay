@@ -47,11 +47,11 @@
             
             {% if money.candelete %}
                 {% buttons %}
-                    <button name='submit'>delete money</button>
+                    <button name='submit'>删除</button>
                 {% endbuttons %}
             {% else %}
                 {% buttons %}
-                    <button name='submit' disabled='disabled' title='Parentmoney, not allowed to delete.'>delete money</button>
+                    <button name='submit' disabled='disabled' title='有关联的记录，不能删除。'>删除</button>
                 {% endbuttons %}
                 
             {% endif %}

@@ -73,7 +73,7 @@
                     {% if money.candelete %}
                         <td width=15 align=right><h5><a href="{% url 'lr:delete_money' money.money_id %}">delete</a></h5></td>
                     {% else %}
-                        <td width=15 align=right><h5><a href="" disabled='disabled' title='Parentmoney, not allowed to delete.'>------</a></h5></td>
+                        <td width=15 align=right><h5><a href="" disabled='disabled' title='有关联的记录，不能删除。'>------</a></h5></td>
                     {% endif %}
 
                     {% if money.haschild %}
@@ -85,7 +85,7 @@
                     {% if money.hasparent %}
                         <td width=15 align=right><h5><a href="{% url 'lr:moneytrack' money.parentmoney_id %}">parent</a></h5></td>
                     {% else %}
-                        <td width=15 align=right><h5><a href="{% url 'lr:moneys'%}" title='Show root records.'>root</a></h5></td>
+                        <td width=15 align=right><h5><a href="{% url 'lr:moneys'%}" title='显示最开始的记录。'>root</a></h5></td>
                     {% endif %}
 
                     {% if money.canrefund %}
