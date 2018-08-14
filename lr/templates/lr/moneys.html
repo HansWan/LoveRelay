@@ -27,10 +27,10 @@
             var button = document.getElementById("showpicbutton");
             if (img.style.display=='none'){
                 img.style.display='block';
-                button.innerHTML='hide picture';}
+                button.innerHTML='隐藏图片';}
             else {
                 img.style.display='none';
-                button.innerHTML='show picture';}
+                button.innerHTML='显示图片';}
             };
           
     </script>    
@@ -98,15 +98,16 @@
                         <img class="media-object img-responsive" src="data:image/png;base64,{{ picture_data }}" id="trackimage" alt="..."></img>
                     </a>
                     <div class="media-body">
-                        <h3 class="media-heading">爱心种子</h3>
-                        <div>这些都是初始的捐赠记录，点列表中的 <small><span class="badge">child</span></small> 能看到后面的爱心传递情况。</div>
+                        <h3 class="media-heading">爱心传递</h3>
+                        <div>这是初始捐赠记录，点列表中的 <small><span class="badge">child</span></small> 能看到爱心传递路线。</div>
                     </div>
-                    <button name='submit' id="showpicbutton" class="btn btn-info btn-sm">hide picture</button>
+                    <button name='submit' id="showpicbutton" class="btn btn-info btn-sm">隐藏图片</button>
                 </div>
             {% endbuttons %}
         {% else %}
-            <h2><span class="label label-default">No money has been added yet.</span></h2>
+            <h2><span class="label label-default">暂时还没有捐赠记录。</span></h2>
         {% endif %}
+        
     </div>
        
 {% endblock content %}
