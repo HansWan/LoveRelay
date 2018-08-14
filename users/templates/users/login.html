@@ -10,16 +10,25 @@
 {% endblock header %}
 
 {% block content %}
+    
+    {% load static %}
+    <div class="container" style="height: 425px;">
+        <div class="row">
+            <div class="col-sm-4">
 
-    <form method="post" action="{% url 'users:login' %}" class="form">
-    {% csrf_token %}
-    {% bootstrap_form form %}
+                <form method="post" action="{% url 'users:login' %}" class="form">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                
+                {% buttons %}
+                <button name="submit" class="btn btn-primary">login</button>
+                {% endbuttons %}
+                
+                <input type="hidden" name="next" value="{% url 'lr:index' %}" />
+                </form>
     
-    {% buttons %}
-    <button name="submit" class="btn btn-primary">login</button>
-    {% endbuttons %}
-    
-    <input type="hidden" name="next" value="{% url 'lr:index' %}" />
-    </form>
-    
+            </div>
+        </div>
+    </div>
+
 {% endblock content %}
