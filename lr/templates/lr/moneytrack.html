@@ -47,7 +47,7 @@
                 <td width=30 align=right><b>修改</b></td>
                 <td width=30 align=right><b>删除</b></td>
                 <td width=30 align=right><b>子记录</b></td>
-                <td width=30 align=right><b>父记录</b></td>
+                <td width=50 align=right><b>父记录</b></td>
                 <td width=30 align=right><b>回赠</b></td>
            </div>    
             
@@ -83,9 +83,9 @@
                     {% endif %}
 
                     {% if money.hasparent %}
-                        <td width=30 align=right><h5><a href="{% url 'lr:moneytrack' money.parentmoney_id %}">父记录</a></h5></td>
+                        <td width=50 align=right><h5><a href="{% url 'lr:moneytrack' money.parentmoney_id %}">父记录</a></h5></td>
                     {% else %}
-                        <td width=30 align=right><h5><a href="{% url 'lr:moneys'%}" title='显示最开始的记录(根记录)。'>根记录</a></h5></td>
+                        <td width=50 align=right><h5><a href="{% url 'lr:moneys'%}" title='显示最开始的记录(根记录)。'>根记录</a></h5></td>
                     {% endif %}
 
                     {% if money.canrefund %}
