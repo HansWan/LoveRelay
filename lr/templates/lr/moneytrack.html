@@ -38,17 +38,17 @@
 
         <table class="table">
             <div>
-                <td width=150 align=left><b>Level</b></td>
+                <td width=150 align=left><b>层次</b></td>
                 <td width=50 align=right><b>ID</b></td>
-                <td width=150 align=right><b>Amount</b></td>
-                <td width=150 align=right><b>User</b></td>
-                <td width=150 align=right><b>Cashtype</b></td>
-                <td width=150 align=right><b>Purpose</b></td>
-                <td width=15 align=right><b>Edit</b></td>
-                <td width=15 align=right><b>Delete</b></td>
-                <td width=15 align=right><b>Child</b></td>
-                <td width=15 align=right><b>Parent</b></td>
-                <td width=15 align=right><b>Refund</b></td>
+                <td width=100 align=right><b>金额</b></td>
+                <td width=100 align=right><b>用户</b></td>
+                <td width=100 align=right><b>币种</b></td>
+                <td width=100 align=right><b>类别</b></td>
+                <td width=15 align=right><b>修改</b></td>
+                <td width=15 align=right><b>删除</b></td>
+                <td width=15 align=right><b>子记录</b></td>
+                <td width=15 align=right><b>父记录</b></td>
+                <td width=15 align=right><b>回赠</b></td>
            </div>    
             
             {% for money in moneys %}
@@ -61,13 +61,13 @@
                         <td width=50 align=right><h5>{{ money.money_id }}</h5></td>
                     {% endif %}
 
-                    <td width=150 align=right><h5>{{ money.amount }}</h5></td>
-                    <td width=150 align=right><h5>{{ money.user }}</h5></td>
-                    <td width=150 align=right><h5>{{ money.cashtype }}</h5></td>
+                    <td width=100 align=right><h5>{{ money.amount }}</h5></td>
+                    <td width=100 align=right><h5>{{ money.user }}</h5></td>
+                    <td width=100 align=right><h5>{{ money.cashtype }}</h5></td>
                     {% ifequal money.purpose_id 4 %}         <!--??????没法直接判断purpose='outcome'，不晓得为什么-->
-                        <td width=150 align=right><h5 style="color:red ">{{ money.purpose }}</h5></td>
+                        <td width=100 align=right><h5 style="color:red ">{{ money.purpose }}</h5></td>
                     {% else %}
-                        <td width=150 align=right><h5>{{ money.purpose }}</h5></td>
+                        <td width=100 align=right><h5>{{ money.purpose }}</h5></td>
                     {% endifequal %}
                     <td width=15 align=right><h5><a href="{% url 'lr:edit_money' money.money_id %}">修改</a></h5></td>
                     {% if money.candelete %}

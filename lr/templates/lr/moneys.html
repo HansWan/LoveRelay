@@ -40,10 +40,10 @@
         {% if not moneys|length_is:"0" %}
             <table class="table table-bordered table-hover table-condensed table-responsive">
                     <td width=50 align=right><b>ID</b></td>
-                    <td width=150 align=right><b>金额</b></td>
-                    <td width=150 align=right><b>用户</b></td>
-                    <td width=150 align=right><b>币种</b></td>
-                    <td width=150 align=right><b>类别</b></td>
+                    <td width=100 align=right><b>金额</b></td>
+                    <td width=100 align=right><b>用户</b></td>
+                    <td width=100 align=right><b>币种</b></td>
+                    <td width=100 align=right><b>类别</b></td>
                     <td width=15 align=right><b>修改</b></td>
                     <td width=15 align=right><b>删除</b></td>
                     <td width=15 align=right><b>子记录</b></td>
@@ -56,13 +56,13 @@
                         {% else %}
                             <td width=50 align=right><h5>{{ money.id }}</h5></td>
                         {% endif %}
-                        <td width=150 align=right><h5>{{ money.amount }}</h5></td>
-                        <td width=150 align=right><h5>{{ money.user }}</h5></td>
-                        <td width=150 align=right><h5>{{ money.cashtype }}</h5></td>
+                        <td width=100 align=right><h5>{{ money.amount }}</h5></td>
+                        <td width=100 align=right><h5>{{ money.user }}</h5></td>
+                        <td width=100 align=right><h5>{{ money.cashtype }}</h5></td>
                         {% ifequal money.purpose_id 4 %}
-                            <td width=150 align=right><h5 style="color:red ">{{ money.purpose }}</h5></td>
+                            <td width=100 align=right><h5 style="color:red ">{{ money.purpose }}</h5></td>
                         {% else %}
-                            <td width=150 align=right><h5>{{ money.purpose }}</h5></td>
+                            <td width=100 align=right><h5>{{ money.purpose }}</h5></td>
                         {% endifequal %}
                         <td width=15 align=right><h5><a href="{% url 'lr:edit_money' money.id %}">修改</a></h5></td>
                         {% if money.candelete %}
