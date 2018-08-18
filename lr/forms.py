@@ -49,7 +49,7 @@ class MoneyForm(forms.ModelForm):
             cur2.execute("select @p1")
             ischild = cur2.fetchone()[0]
             if ischild == 1:
-                self._errors["parentmoney"] = ["Parentmoney recursively referred. Please select another parentmoney."]
+                self._errors["parentmoney"] = ["父记录被循环引用，请选择另一条父记录。"]
         return self.cleaned_data['parentmoney']
             
         # if self.cleaned_data['parentmoney'] != None:
@@ -65,14 +65,14 @@ class MoneyForm(forms.ModelForm):
         form_data = self.cleaned_data
 #        if form_data['amount'] > form_data['parentmoney'].amount:
         if form_data['parentmoney'] != None and form_data['amount'] > form_data['parentmoney'].amount:
-            self._errors["amount"] = ["Please input amount less than parentmoney."]
+            self._errors["amount"] = ["请输入低于父记录的金额。"]
             del form_data['amount']
         return form_data
                 
     class Meta:
         model = Money
         fields = ['id', 'amount', 'purpose', 'user', 'cashtype', 'beneficiarydesignated', 'parentmoney']
-        labels = {'amount' : 'Amount', 'purpose': 'Purpose', 'user': 'User', 'cashtype': 'Cashtype', 'beneficiarydesignated': 'Beneficiary Designated', 'parentmoney': 'Parentmoney'}
+        labels = {'amount' : '金额', 'purpose': '类别', 'user': '用户', 'cashtype': '币种', 'beneficiarydesignated': '指定受益人', 'parentmoney': '父记录'}
 
 class RequestForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -89,14 +89,14 @@ class RequestForm(forms.ModelForm):
     def clean(self):
         form_data = self.cleaned_data
         if form_data['parentmoney'] != None and form_data['amount'] > form_data['parentmoney'].amount:
-            self._errors["amount"] = ["Please input amount less than parentmoney."]
+            self._errors["amount"] = ["请输入低于父记录的金额。"]
             del form_data['amount']
         return form_data
                 
     class Meta:
         model = Money
         fields = ['amount', 'purpose', 'user', 'cashtype', 'donatordesignated', 'parentmoney']
-        labels = {'amount' : 'Amount', 'purpose': 'Purpose', 'user': 'User', 'cashtype': 'Cashtype', 'donatordesignated': 'Donator Designated', 'parentmoney': 'Parentmoney'}
+        labels = {'amount' : '金额', 'purpose': '类别', 'user': '用户', 'cashtype': '币种', 'donatordesignated': '指定捐赠人', 'parentmoney': '父记录'}
 
 class MoneydetailForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -117,7 +117,7 @@ class MoneydetailForm(forms.ModelForm):
     class Meta:
         model = Money
         fields = '__all__'
-        labels = {'id': 'ID', 'amount': 'Amount', 'purpose': 'Purpose', 'user': 'User', 'cashtype': 'Cashtype', 'parentmoney': 'Parentmoney', 'test': 'Test'}
+        labels = {'id': 'ID', 'amount': '金额', 'purpose': '类别', 'user': '用户', 'cashtype': '币种', 'parentmoney': '父记录', 'test': 'Test'}
 
 class MoneylistForm(forms.Form):
     amount = forms.IntegerField()
