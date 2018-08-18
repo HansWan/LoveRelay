@@ -40,15 +40,15 @@
         {% if not moneys|length_is:"0" %}
             <table class="table table-bordered table-hover table-condensed table-responsive">
                     <td width=50 align=right><b>ID</b></td>
-                    <td width=150 align=right><b>Amount</b></td>
-                    <td width=150 align=right><b>User</b></td>
-                    <td width=150 align=right><b>Cashtype</b></td>
-                    <td width=150 align=right><b>Purpose</b></td>
-                    <td width=15 align=right><b>Edit</b></td>
-                    <td width=15 align=right><b>Delete</b></td>
-                    <td width=15 align=right><b>Child</b></td>
-                    <td width=15 align=right><b>Parent</b></td>
-                    <td width=15 align=right><b>Refund</b></td>
+                    <td width=150 align=right><b>金额</b></td>
+                    <td width=150 align=right><b>用户</b></td>
+                    <td width=150 align=right><b>币种</b></td>
+                    <td width=150 align=right><b>类别</b></td>
+                    <td width=15 align=right><b>修改</b></td>
+                    <td width=15 align=right><b>删除</b></td>
+                    <td width=15 align=right><b>子记录</b></td>
+                    <td width=15 align=right><b>父记录</b></td>
+                    <td width=15 align=right><b>回赠</b></td>
                 {% for money in moneys %}
                     <tr>
                         {% if forloop.first %}      
